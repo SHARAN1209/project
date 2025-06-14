@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CSV Question Viewer</title>
+  <title>CSV Question Viewer with Filters</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
     header { background: #333; color: #fff; padding: 1em; text-align: center; }
+    main { padding: 1em; }
+    select { margin: 0.5em; padding: 0.5em; }
     table { width: 100%; border-collapse: collapse; margin-top: 1em; }
     th, td { border: 1px solid #ccc; padding: 0.8em; text-align: left; }
     tr:hover { background-color: #f9f9f9; cursor: pointer; }
@@ -28,6 +30,17 @@
     <!-- Page 1: Table -->
     <div id="list-page" class="page active">
       <h2>Questions</h2>
+
+      <label for="topic-filter">Filter by Topic:</label>
+      <select id="topic-filter">
+        <option value="">All Topics</option>
+      </select>
+
+      <label for="difficulty-filter">Filter by Difficulty:</label>
+      <select id="difficulty-filter">
+        <option value="">All Difficulties</option>
+      </select>
+
       <table id="question-table">
         <thead>
           <tr>
@@ -56,6 +69,8 @@
     const detailPage = document.getElementById('detail-page');
     const questionBox = document.getElementById('question-box');
     const answerBox = document.getElementById('answer-box');
+    const topicFilter = document.getElementById('topic-filter');
+    const difficultyFilter = document.getElementById('difficulty-filter');
     let data = [];
 
     function parseCSV(csvText) {
@@ -93,25 +108,62 @@
       listPage.classList.add('active');
     }
 
-    function populateTable() {
-      data.forEach((item, index) => {
+    function populateDropdown(selectElement, values) {
+      values.forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        selectElement.appendChild(opt);
+      });
+    }
+
+    function getFilteredData() {
+      const topic = topicFilter.value;
+      const difficulty = difficultyFilter.value;
+
+      return data.filter(item => {
+        return (!topic || item.topic === topic) &&
+               (!difficulty || item.difficulty === difficulty);
+      });
+    }
+
+    function renderTable() {
+      questionTableBody.innerHTML = '';
+      const filtered = getFilteredData();
+      if (filtered.length === 0) {
+        questionTableBody.innerHTML = '<tr><td colspan="3">No results found.</td></tr>';
+        return;
+      }
+
+      filtered.forEach((item, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${item.topic}</td>
           <td style="color:blue;text-decoration:underline">${item["question header"]}</td>
           <td>${item.difficulty}</td>
         `;
-        tr.addEventListener('click', () => showDetail(index));
+        tr.addEventListener('click', () => showDetail(data.indexOf(item)));
         questionTableBody.appendChild(tr);
       });
     }
 
-    // Load CSV on page load
+    function initFilters() {
+      const topics = [...new Set(data.map(d => d.topic))].sort();
+      const difficulties = [...new Set(data.map(d => d.difficulty))].sort();
+
+      populateDropdown(topicFilter, topics);
+      populateDropdown(difficultyFilter, difficulties);
+
+      topicFilter.addEventListener('change', renderTable);
+      difficultyFilter.addEventListener('change', renderTable);
+    }
+
     fetch('data/questions.csv')
       .then(res => res.text())
       .then(text => {
         data = parseCSV(text);
-        populateTable();
+        initFilters();
+        renderTable();
       })
       .catch(err => {
         questionTableBody.innerHTML = `<tr><td colspan="3">Failed to load CSV: ${err}</td></tr>`;
