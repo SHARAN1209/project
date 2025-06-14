@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSV Question Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 1em;
+      text-align: center;
+    }
+    main {
+      padding: 1em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.8em;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+      cursor: pointer;
+    }
+    .page {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .qa-container {
+      display: flex;
+      flex-direction: row;
+      gap: 2em;
+      padding: 1em;
+    }
+    .qa-box {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      background: #f9f9f9;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+    .back-btn {
+      margin: 1em;
+      display: inline-block;
+      padding: 0.5em 1em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .back-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Question Viewer</h1>
+  </header>
+
+  <main>
+    <!-- Page 1: Table -->
+    <div id="list-page" class="page active">
+      <h2>Questions</h2>
+      <table id="question-table">
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Question</th>
+            <th>Difficulty</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Page 2: Question & Answer -->
+    <div id="detail-page" class="page">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div class="qa-container">
+        <div class="qa-box" id="question-box">Loading question...</div>
+        <div class="qa-box" id="answer-box">Loading answer...</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Simulated embedded CSV with links to .txt files
+    const csvData = `
+topic,question header,difficulty,question,answer
+Math,What is the derivative of x^2?,easy,https://github.com/chick-soups/TextFilesForTextMeshPro/blob/master/Currency%20Sign.txt,answers/a1.txt
+Programming,Reverse a string in Python,medium,questions/q2.txt,answers/a2.txt
+Physics,Newton's Second Law example,hard,questions/q3.txt,answers/a3.txt
+`.trim();
+
+    function parseCSV(csv) {
+      const [headerLine, ...lines] = csv.split('\n');
+      const headers = headerLine.split(',');
+      return lines.map(line => {
+        const values = line.split(',');
+        return headers.reduce((obj, h, i) => {
+          obj[h.trim()] = values[i].trim();
+          return obj;
+        }, {});
+      });
+    }
+
+    const data = parseCSV(csvData);
+    const tbody = document.querySelector('#question-table tbody');
+    const listPage = document.getElementById('list-page');
+    const detailPage = document.getElementById('detail-page');
+    const questionBox = document.getElementById('question-box');
+    const answerBox = document.getElementById('answer-box');
+
+    // Render the question list
+    data.forEach((row, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.topic}</td>
+        <td style="color:blue;text-decoration:underline">${row['question header']}</td>
+        <td>${row.difficulty}</td>
+      `;
+      tr.addEventListener('click', () => showDetail(index));
+      tbody.appendChild(tr);
+    });
+
+    function fetchText(url) {
+      return fetch(url)
+        .then(res => res.ok ? res.text() : Promise.reject(`Error loading ${url}`))
+        .catch(err => `Failed to load: ${url}\n${err}`);
+    }
+
+    function showDetail(index) {
+      const item = data[index];
+      questionBox.textContent = 'Loading question...';
+      answerBox.textContent = 'Loading answer...';
+      fetchText(item.question).then(text => questionBox.textContent = text);
+      fetchText(item.answer).then(text => answerBox.textContent = text);
+      listPage.classList.remove('active');
+      detailPage.classList.add('active');
+    }
+
+    function goBack() {
+      detailPage.classList.remove('active');
+      listPage.classList.add('active');
+    }
+  </script>
+</body>
+</html>
