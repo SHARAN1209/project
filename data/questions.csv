@@ -1,0 +1,4 @@
+topic,question header,difficulty,question,answer
+Math,What is the derivative of x^2?,easy,questions/q1.txt,answers/a1.txt
+Programming,Reverse a string in Python,medium,questions/q2.txt,answers/a2.txt
+Physics,Newton's Second Law example,hard,questions/q3.txt,answers/a3.txt
