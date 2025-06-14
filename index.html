@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Filtered Questions</title>
+  <title>Question Viewer</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
     header { background: #333; color: #fff; padding: 1em; text-align: center; }
     main { padding: 1em; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1em; position: relative; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
     th, td { border: 1px solid #ccc; padding: 0.8em; text-align: left; position: relative; }
     tr:hover { background-color: #f9f9f9; cursor: pointer; }
     .page { display: none; }
@@ -44,6 +44,16 @@
     .filter-dropdown .clear {
       font-style: italic;
       color: #007bff;
+    }
+    .question-header-bar {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 0.5em;
+    }
+    .question-header-bar a {
+      text-decoration: none;
+      margin-left: 0.5em;
+      font-size: 0.9em;
     }
   </style>
 </head>
@@ -81,7 +91,12 @@
   <div id="detail-page" class="page">
     <button class="back-btn" onclick="goBack()">← Back</button>
     <div class="qa-container">
-      <div class="qa-box" id="question-box">Loading...</div>
+      <div class="qa-box">
+        <div class="question-header-bar" id="question-header-bar">
+          Question
+        </div>
+        <div id="question-box">Loading...</div>
+      </div>
       <div class="qa-box" id="answer-box">Loading...</div>
     </div>
   </div>
@@ -93,39 +108,43 @@
   const detailPage = document.getElementById('detail-page');
   const questionBox = document.getElementById('question-box');
   const answerBox = document.getElementById('answer-box');
+  const questionHeaderBar = document.getElementById('question-header-bar');
   const topicDropdown = document.getElementById('topic-dropdown');
   const difficultyDropdown = document.getElementById('difficulty-dropdown');
 
   let data = [];
-  let filters = {
-    topic: '',
-    difficulty: ''
-  };
+  let filters = { topic: '', difficulty: '' };
 
   function parseCSV(csvText) {
     const [headerLine, ...lines] = csvText.trim().split('\n');
-    const headers = headerLine.split(',');
+    const headers = headerLine.split(',').map(h => h.trim());
     return lines.map(line => {
       const values = line.split(',');
       return headers.reduce((obj, header, i) => {
-        obj[header.trim()] = values[i].trim();
+        obj[header] = values[i] ? values[i].trim() : '';
         return obj;
       }, {});
     });
   }
 
   function fetchText(url) {
-    return fetch(url)
-      .then(res => res.ok ? res.text() : Promise.reject(`Failed to fetch ${url}`))
-      .catch(err => `Error: ${err}`);
+    return fetch(url).then(res => res.ok ? res.text() : Promise.reject(`Failed to fetch ${url}`)).catch(err => `Error: ${err}`);
   }
 
   function showDetail(index) {
     const item = data[index];
     questionBox.textContent = 'Loading...';
     answerBox.textContent = 'Loading...';
+
+    // Show header with link
+    questionHeaderBar.innerHTML = `
+      ${item["question header"]}
+      <a href="${item["problem link"]}" target="_blank" title="Open problem link">🔗</a>
+    `;
+
     fetchText(item.question).then(text => questionBox.textContent = text);
     fetchText(item.answer).then(text => answerBox.textContent = text);
+
     listPage.classList.remove('active');
     detailPage.classList.add('active');
   }
