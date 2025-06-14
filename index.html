@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CSV Question Viewer with Filters</title>
+  <title>Filtered Questions</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
     header { background: #333; color: #fff; padding: 1em; text-align: center; }
     main { padding: 1em; }
-    select { margin: 0.5em; padding: 0.5em; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
-    th, td { border: 1px solid #ccc; padding: 0.8em; text-align: left; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; position: relative; }
+    th, td { border: 1px solid #ccc; padding: 0.8em; text-align: left; position: relative; }
     tr:hover { background-color: #f9f9f9; cursor: pointer; }
     .page { display: none; }
     .active { display: block; }
@@ -18,156 +17,202 @@
     .qa-box { flex: 1; background: #f4f4f4; padding: 1em; border: 1px solid #ccc; white-space: pre-wrap; overflow-y: auto; max-height: 80vh; }
     .back-btn { margin: 1em; padding: 0.5em 1em; background: #007bff; color: #fff; border: none; cursor: pointer; }
     .back-btn:hover { background: #0056b3; }
+    .filter-icon { cursor: pointer; margin-left: 0.5em; font-size: 0.9em; color: #555; }
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      z-index: 10;
+      padding: 0.5em;
+      display: none;
+    }
+    .filter-dropdown select {
+      width: 100%;
+    }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Question Viewer</h1>
-  </header>
+<header>
+  <h1>Question Viewer</h1>
+</header>
 
-  <main>
-    <!-- Page 1: Table -->
-    <div id="list-page" class="page active">
-      <h2>Questions</h2>
+<main>
+  <!-- Page 1: Table -->
+  <div id="list-page" class="page active">
+    <h2>Questions</h2>
+    <table id="question-table">
+      <thead>
+        <tr>
+          <th>
+            Topic
+            <span class="filter-icon" onclick="toggleDropdown('topic')">🔽</span>
+            <div class="filter-dropdown" id="topic-dropdown">
+              <select id="topic-filter">
+                <option value="">All</option>
+              </select>
+            </div>
+          </th>
+          <th>Question</th>
+          <th>
+            Difficulty
+            <span class="filter-icon" onclick="toggleDropdown('difficulty')">🔽</span>
+            <div class="filter-dropdown" id="difficulty-dropdown">
+              <select id="difficulty-filter">
+                <option value="">All</option>
+              </select>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-      <label for="topic-filter">Filter by Topic:</label>
-      <select id="topic-filter">
-        <option value="">All Topics</option>
-      </select>
-
-      <label for="difficulty-filter">Filter by Difficulty:</label>
-      <select id="difficulty-filter">
-        <option value="">All Difficulties</option>
-      </select>
-
-      <table id="question-table">
-        <thead>
-          <tr>
-            <th>Topic</th>
-            <th>Question</th>
-            <th>Difficulty</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+  <!-- Page 2: Details -->
+  <div id="detail-page" class="page">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <div class="qa-container">
+      <div class="qa-box" id="question-box">Loading...</div>
+      <div class="qa-box" id="answer-box">Loading...</div>
     </div>
+  </div>
+</main>
 
-    <!-- Page 2: Details -->
-    <div id="detail-page" class="page">
-      <button class="back-btn" onclick="goBack()">← Back</button>
-      <div class="qa-container">
-        <div class="qa-box" id="question-box">Loading...</div>
-        <div class="qa-box" id="answer-box">Loading...</div>
-      </div>
-    </div>
-  </main>
+<script>
+  const questionTableBody = document.querySelector('#question-table tbody');
+  const listPage = document.getElementById('list-page');
+  const detailPage = document.getElementById('detail-page');
+  const questionBox = document.getElementById('question-box');
+  const answerBox = document.getElementById('answer-box');
+  const topicFilter = document.getElementById('topic-filter');
+  const difficultyFilter = document.getElementById('difficulty-filter');
+  const topicDropdown = document.getElementById('topic-dropdown');
+  const difficultyDropdown = document.getElementById('difficulty-dropdown');
 
-  <script>
-    const questionTableBody = document.querySelector('#question-table tbody');
-    const listPage = document.getElementById('list-page');
-    const detailPage = document.getElementById('detail-page');
-    const questionBox = document.getElementById('question-box');
-    const answerBox = document.getElementById('answer-box');
-    const topicFilter = document.getElementById('topic-filter');
-    const difficultyFilter = document.getElementById('difficulty-filter');
-    let data = [];
+  let data = [];
 
-    function parseCSV(csvText) {
-      const [headerLine, ...lines] = csvText.trim().split('\n');
-      const headers = headerLine.split(',');
-      return lines.map(line => {
-        const values = line.split(',');
-        return headers.reduce((obj, header, i) => {
-          obj[header.trim()] = values[i].trim();
-          return obj;
-        }, {});
-      });
+  function parseCSV(csvText) {
+    const [headerLine, ...lines] = csvText.trim().split('\n');
+    const headers = headerLine.split(',');
+    return lines.map(line => {
+      const values = line.split(',');
+      return headers.reduce((obj, header, i) => {
+        obj[header.trim()] = values[i].trim();
+        return obj;
+      }, {});
+    });
+  }
+
+  function fetchText(url) {
+    return fetch(url)
+      .then(res => res.ok ? res.text() : Promise.reject(`Failed to fetch ${url}`))
+      .catch(err => `Error: ${err}`);
+  }
+
+  function showDetail(index) {
+    const item = data[index];
+    questionBox.textContent = 'Loading...';
+    answerBox.textContent = 'Loading...';
+    fetchText(item.question).then(text => questionBox.textContent = text);
+    fetchText(item.answer).then(text => answerBox.textContent = text);
+    listPage.classList.remove('active');
+    detailPage.classList.add('active');
+  }
+
+  function goBack() {
+    detailPage.classList.remove('active');
+    listPage.classList.add('active');
+  }
+
+  function getFilteredData() {
+    const topic = topicFilter.value;
+    const difficulty = difficultyFilter.value;
+    return data.filter(item => {
+      return (!topic || item.topic === topic) &&
+             (!difficulty || item.difficulty === difficulty);
+    });
+  }
+
+  function renderTable() {
+    questionTableBody.innerHTML = '';
+    const filtered = getFilteredData();
+    if (filtered.length === 0) {
+      questionTableBody.innerHTML = '<tr><td colspan="3">No results found.</td></tr>';
+      return;
+    }
+    filtered.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.topic}</td>
+        <td style="color:blue;text-decoration:underline">${item["question header"]}</td>
+        <td>${item.difficulty}</td>
+      `;
+      tr.addEventListener('click', () => showDetail(data.indexOf(item)));
+      questionTableBody.appendChild(tr);
+    });
+  }
+
+  function populateFilters() {
+    const topics = [...new Set(data.map(d => d.topic))].sort();
+    const difficulties = [...new Set(data.map(d => d.difficulty))].sort();
+
+    for (let t of topics) {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      topicFilter.appendChild(opt);
     }
 
-    function fetchText(url) {
-      return fetch(url)
-        .then(res => res.ok ? res.text() : Promise.reject(`Failed to fetch ${url}`))
-        .catch(err => `Error: ${err}`);
+    for (let d of difficulties) {
+      const opt = document.createElement('option');
+      opt.value = d;
+      opt.textContent = d;
+      difficultyFilter.appendChild(opt);
     }
 
-    function showDetail(index) {
-      const item = data[index];
-      questionBox.textContent = 'Loading...';
-      answerBox.textContent = 'Loading...';
+    topicFilter.addEventListener('change', () => {
+      renderTable();
+      topicDropdown.style.display = 'none';
+    });
 
-      fetchText(item.question).then(text => questionBox.textContent = text);
-      fetchText(item.answer).then(text => answerBox.textContent = text);
+    difficultyFilter.addEventListener('change', () => {
+      renderTable();
+      difficultyDropdown.style.display = 'none';
+    });
+  }
 
-      listPage.classList.remove('active');
-      detailPage.classList.add('active');
+  function toggleDropdown(type) {
+    if (type === 'topic') {
+      topicDropdown.style.display = topicDropdown.style.display === 'block' ? 'none' : 'block';
+      difficultyDropdown.style.display = 'none';
+    } else if (type === 'difficulty') {
+      difficultyDropdown.style.display = difficultyDropdown.style.display === 'block' ? 'none' : 'block';
+      topicDropdown.style.display = 'none';
     }
+  }
 
-    function goBack() {
-      detailPage.classList.remove('active');
-      listPage.classList.add('active');
+  // Load CSV
+  fetch('data/questions.csv')
+    .then(res => res.text())
+    .then(text => {
+      data = parseCSV(text);
+      populateFilters();
+      renderTable();
+    })
+    .catch(err => {
+      questionTableBody.innerHTML = `<tr><td colspan="3">Failed to load CSV: ${err}</td></tr>`;
+    });
+
+  // Close filters if clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.filter-icon') && !e.target.closest('.filter-dropdown')) {
+      topicDropdown.style.display = 'none';
+      difficultyDropdown.style.display = 'none';
     }
-
-    function populateDropdown(selectElement, values) {
-      values.forEach(val => {
-        const opt = document.createElement('option');
-        opt.value = val;
-        opt.textContent = val;
-        selectElement.appendChild(opt);
-      });
-    }
-
-    function getFilteredData() {
-      const topic = topicFilter.value;
-      const difficulty = difficultyFilter.value;
-
-      return data.filter(item => {
-        return (!topic || item.topic === topic) &&
-               (!difficulty || item.difficulty === difficulty);
-      });
-    }
-
-    function renderTable() {
-      questionTableBody.innerHTML = '';
-      const filtered = getFilteredData();
-      if (filtered.length === 0) {
-        questionTableBody.innerHTML = '<tr><td colspan="3">No results found.</td></tr>';
-        return;
-      }
-
-      filtered.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.topic}</td>
-          <td style="color:blue;text-decoration:underline">${item["question header"]}</td>
-          <td>${item.difficulty}</td>
-        `;
-        tr.addEventListener('click', () => showDetail(data.indexOf(item)));
-        questionTableBody.appendChild(tr);
-      });
-    }
-
-    function initFilters() {
-      const topics = [...new Set(data.map(d => d.topic))].sort();
-      const difficulties = [...new Set(data.map(d => d.difficulty))].sort();
-
-      populateDropdown(topicFilter, topics);
-      populateDropdown(difficultyFilter, difficulties);
-
-      topicFilter.addEventListener('change', renderTable);
-      difficultyFilter.addEventListener('change', renderTable);
-    }
-
-    fetch('data/questions.csv')
-      .then(res => res.text())
-      .then(text => {
-        data = parseCSV(text);
-        initFilters();
-        renderTable();
-      })
-      .catch(err => {
-        questionTableBody.innerHTML = `<tr><td colspan="3">Failed to load CSV: ${err}</td></tr>`;
-      });
-  </script>
+  });
+</script>
 </body>
 </html>
