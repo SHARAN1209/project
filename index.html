@@ -2,22 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Question Viewer</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background: #333; color: #fff; padding: 1em; text-align: center; }
-    main { padding: 1em; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
-    th, td { border: 1px solid #ccc; padding: 0.8em; text-align: left; position: relative; }
-    tr:hover { background-color: #f9f9f9; cursor: pointer; }
-    .page { display: none; }
-    .active { display: block; }
-    .qa-container { display: flex; gap: 2em; padding: 1em; }
-    .qa-box { flex: 1; background: #f4f4f4; padding: 1em; border: 1px solid #ccc; white-space: pre-wrap; overflow-y: auto; max-height: 80vh; }
-    .back-btn { margin: 1em; padding: 0.5em 1em; background: #007bff; color: #fff; border: none; cursor: pointer; }
-    .back-btn:hover { background: #0056b3; }
-    .filter-icon { cursor: pointer; margin-left: 0.5em; font-size: 0.9em; color: #555; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #333;
+      color: white;
+      padding: 1em;
+      text-align: center;
+    }
+    main {
+      padding: 1em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.8em;
+      text-align: left;
+      position: relative;
+    }
+    tr:hover {
+      background: #f9f9f9;
+      cursor: pointer;
+    }
+    .page {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .qa-container {
+      display: flex;
+      gap: 2em;
+      padding: 1em;
+    }
+    .qa-box {
+      flex: 1;
+      background: #f4f4f4;
+      padding: 1em;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+    .back-btn {
+      margin: 1em;
+      padding: 0.5em 1em;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .back-btn:hover {
+      background: #0056b3;
+    }
+    .filter-icon {
+      cursor: pointer;
+      margin-left: 0.5em;
+      font-size: 0.9em;
+      color: #555;
+    }
     .filter-dropdown {
       position: absolute;
       top: 100%;
@@ -49,11 +101,20 @@
       font-weight: bold;
       font-size: 1.2em;
       margin-bottom: 0.5em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em;
+      background: #f4f4f4;
+      border: 1px solid #ccc;
     }
     .question-header-bar a {
       text-decoration: none;
-      margin-left: 0.5em;
-      font-size: 0.9em;
+      font-size: 1em;
+      color: #007bff;
+    }
+    .question-header-bar a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -64,46 +125,40 @@
 </header>
 
 <main>
-  <!-- Page 1: Table -->
+  <!-- Page 1 -->
   <div id="list-page" class="page active">
     <h2>Questions</h2>
-    <table id="question-table">
+    <table>
       <thead>
         <tr>
           <th>
-            Topic
-            <span class="filter-icon" onclick="toggleDropdown('topic')">🔽</span>
+            Topic <span class="filter-icon" onclick="toggleDropdown('topic')">🔽</span>
             <div class="filter-dropdown" id="topic-dropdown"></div>
           </th>
           <th>Question</th>
           <th>
-            Difficulty
-            <span class="filter-icon" onclick="toggleDropdown('difficulty')">🔽</span>
+            Difficulty <span class="filter-icon" onclick="toggleDropdown('difficulty')">🔽</span>
             <div class="filter-dropdown" id="difficulty-dropdown"></div>
           </th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="question-table-body"></tbody>
     </table>
   </div>
 
-  <!-- Page 2: Details -->
+  <!-- Page 2 -->
   <div id="detail-page" class="page">
     <button class="back-btn" onclick="goBack()">← Back</button>
+    <div class="question-header-bar" id="question-header-bar"></div>
     <div class="qa-container">
-      <div class="qa-box">
-        <div class="question-header-bar" id="question-header-bar">
-          Question
-        </div>
-        <div id="question-box">Loading...</div>
-      </div>
+      <div class="qa-box" id="question-box">Loading...</div>
       <div class="qa-box" id="answer-box">Loading...</div>
     </div>
   </div>
 </main>
 
 <script>
-  const questionTableBody = document.querySelector('#question-table tbody');
+  const questionTableBody = document.getElementById('question-table-body');
   const listPage = document.getElementById('list-page');
   const detailPage = document.getElementById('detail-page');
   const questionBox = document.getElementById('question-box');
@@ -115,8 +170,8 @@
   let data = [];
   let filters = { topic: '', difficulty: '' };
 
-  function parseCSV(csvText) {
-    const [headerLine, ...lines] = csvText.trim().split('\n');
+  function parseCSV(text) {
+    const [headerLine, ...lines] = text.trim().split('\n');
     const headers = headerLine.split(',').map(h => h.trim());
     return lines.map(line => {
       const values = line.split(',');
@@ -128,55 +183,30 @@
   }
 
   function fetchText(url) {
-    return fetch(url).then(res => res.ok ? res.text() : Promise.reject(`Failed to fetch ${url}`)).catch(err => `Error: ${err}`);
-  }
-
-  function showDetail(index) {
-    const item = data[index];
-    questionBox.textContent = 'Loading...';
-    answerBox.textContent = 'Loading...';
-
-    // Show header with link
-    questionHeaderBar.innerHTML = `
-      ${item["question header"]}
-      <a href="${item["problem link"]}" target="_blank" title="Open problem link">🔗</a>
-    `;
-
-    fetchText(item.question).then(text => questionBox.textContent = text);
-    fetchText(item.answer).then(text => answerBox.textContent = text);
-
-    listPage.classList.remove('active');
-    detailPage.classList.add('active');
-  }
-
-  function goBack() {
-    detailPage.classList.remove('active');
-    listPage.classList.add('active');
-  }
-
-  function getFilteredData() {
-    return data.filter(item => {
-      return (!filters.topic || item.topic === filters.topic) &&
-             (!filters.difficulty || item.difficulty === filters.difficulty);
-    });
+    return fetch(url).then(res => res.ok ? res.text() : 'Error loading file');
   }
 
   function renderTable() {
     questionTableBody.innerHTML = '';
-    const filtered = getFilteredData();
-    if (filtered.length === 0) {
-      questionTableBody.innerHTML = '<tr><td colspan="3">No results found.</td></tr>';
+    const filtered = data.filter(item =>
+      (!filters.topic || item.topic === filters.topic) &&
+      (!filters.difficulty || item.difficulty === filters.difficulty)
+    );
+
+    if (!filtered.length) {
+      questionTableBody.innerHTML = '<tr><td colspan="3">No questions found.</td></tr>';
       return;
     }
-    filtered.forEach((item, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+
+    filtered.forEach((item, idx) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
         <td>${item.topic}</td>
         <td style="color:blue;text-decoration:underline">${item["question header"]}</td>
         <td>${item.difficulty}</td>
       `;
-      tr.addEventListener('click', () => showDetail(data.indexOf(item)));
-      questionTableBody.appendChild(tr);
+      row.onclick = () => showDetail(data.indexOf(item));
+      questionTableBody.appendChild(row);
     });
   }
 
@@ -187,7 +217,7 @@
 
     const clear = document.createElement('li');
     clear.textContent = 'Clear';
-    clear.className = 'clear';
+    clear.classList.add('clear');
     clear.onclick = () => {
       filters[type] = '';
       renderTable();
@@ -216,18 +246,37 @@
     other.style.display = 'none';
   }
 
+  function showDetail(index) {
+    const item = data[index];
+    questionBox.textContent = 'Loading...';
+    answerBox.textContent = 'Loading...';
+
+    questionHeaderBar.innerHTML = `
+      <span>${item["question header"]}</span>
+      <a href="${item["problem link"]}" target="_blank" title="Open external problem">🔗</a>
+    `;
+
+    fetchText(item.question).then(text => questionBox.textContent = text);
+    fetchText(item.answer).then(text => answerBox.textContent = text);
+
+    listPage.classList.remove('active');
+    detailPage.classList.add('active');
+  }
+
+  function goBack() {
+    detailPage.classList.remove('active');
+    listPage.classList.add('active');
+  }
+
   fetch('data/questions.csv')
     .then(res => res.text())
     .then(text => {
       data = parseCSV(text);
-      const topics = [...new Set(data.map(d => d.topic))].sort();
-      const difficulties = [...new Set(data.map(d => d.difficulty))].sort();
+      const topics = [...new Set(data.map(d => d.topic))];
+      const difficulties = [...new Set(data.map(d => d.difficulty))];
       populateFilterDropdown('topic', topics);
       populateFilterDropdown('difficulty', difficulties);
       renderTable();
-    })
-    .catch(err => {
-      questionTableBody.innerHTML = `<tr><td colspan="3">Failed to load CSV: ${err}</td></tr>`;
     });
 
   document.addEventListener('click', (e) => {
