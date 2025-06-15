@@ -2,395 +2,128 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Question Viewer</title>
+  <title>Flexible Question Viewer</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-    }
-
-    header {
-      background: #333;
-      color: white;
-      padding: 1em;
-      text-align: center;
-    }
-
-    main {
-      padding: 1em;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1em;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.8em;
-      text-align: left;
-      position: relative;
-    }
-
-    tr:hover {
-      background: #f9f9f9;
-      cursor: pointer;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .active {
-      display: block;
-    }
-
-    .qa-container {
-      display: flex;
-      gap: 2em;
-      padding: 1em;
-    }
-
-    .qa-box {
-      flex: 1;
-      background: #f4f4f4;
-      padding: 1em;
-      border: 1px solid #ccc;
-      white-space: pre-wrap;
-      overflow-y: auto;
-      max-height: 80vh;
-      position: relative;
-    }
-
-    .fullscreen {
-      position: fixed;
-      top: 1em;
-      left: 1em;
-      right: 1em;
-      bottom: 1em;
-      background: white;
-      z-index: 1000;
-      overflow: auto;
-      padding: 1em;
-      border: 2px solid #007bff;
-    }
-
+    body { font-family: Arial; margin: 0; }
+    header { background: #333; color: white; padding: 1em; text-align: center; }
+    main { padding: 1em; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: 0.8em; text-align: left; }
+    tr:hover { background: #f9f9f9; cursor: pointer; }
+    .page { display: none; }
+    .active { display: block; }
     .back-btn {
-      position: fixed;
-      top: 1em;
-      left: 1em;
-      padding: 0.5em 1em;
-      background: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      z-index: 1001;
-      border-radius: 4px;
+      position: fixed; top: 1em; left: 1em;
+      padding: 0.5em 1em; background: #007bff; color: white;
+      border: none; cursor: pointer; z-index: 1001; border-radius: 4px;
     }
-
-    .back-btn:hover {
-      background: #0056b3;
+    .tab-controls { margin-bottom: 1em; display: flex; gap: 1em; }
+    .tab-controls button {
+      padding: 0.5em 1em; border: none; cursor: pointer;
+      background: #eee; border-radius: 4px;
     }
-
-    .filter-icon {
-      cursor: pointer;
-      margin-left: 0.5em;
-      font-size: 0.9em;
-      color: #555;
-    }
-
-    .filter-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: white;
-      border: 1px solid #ccc;
-      z-index: 10;
-      padding: 0.5em;
-      display: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .filter-dropdown ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .filter-dropdown li {
-      padding: 0.3em 0.5em;
-      cursor: pointer;
-    }
-
-    .filter-dropdown li:hover {
-      background: #f0f0f0;
-    }
-
-    .filter-dropdown .clear {
-      font-style: italic;
-      color: #007bff;
-    }
-
+    .tab-controls button.active { background: #007bff; color: white; }
+    .content-section { display: none; background: #f4f4f4; padding: 1em; border: 1px solid #ccc; white-space: pre-wrap; overflow-y: auto; }
+    .content-section.active { display: block; }
     .question-header-bar {
-      display: flex;
-      align-items: center;
-      padding-bottom: 0.5em;
-      gap: 0.5em;
-      font-weight: bold;
-      font-size: 1.1em;
+      display: flex; align-items: center;
+      justify-content: space-between; font-weight: bold;
+      font-size: 1.1em; margin-bottom: 1em;
     }
-
-    .question-header-bar a {
-      text-decoration: none;
-      font-size: 1em;
-      color: #007bff;
-    }
-
-    .question-header-bar a:hover {
-      text-decoration: underline;
-    }
-
-    .solution-btn {
-      margin-top: 1em;
-      padding: 0.5em 1em;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 0.95em;
-      border-radius: 5px;
-    }
-
-    .solution-btn:hover {
-      background-color: #218838;
-    }
-
-    #full-view-icon {
-      position: absolute;
-      top: 0.5em;
-      right: 0.5em;
-      cursor: pointer;
-      font-size: 1.2em;
-      display: none;
-    }
-
-    #full-view-icon.fullscreen-float {
-      position: fixed;
-      top: 1em;
-      right: 1em;
-      z-index: 1001;
-      font-size: 1.5em;
-      background: white;
-      padding: 0.2em 0.4em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
+    .question-header-bar a { text-decoration: none; color: #007bff; }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Question Viewer</h1>
-</header>
-
+<header><h1>Flexible Question Viewer</h1></header>
 <main>
-  <!-- Page 1 -->
   <div id="list-page" class="page active">
     <h2>Questions</h2>
     <table>
       <thead>
-        <tr>
-          <th>
-            Topic <span class="filter-icon" onclick="toggleDropdown('topic')">🔽</span>
-            <div class="filter-dropdown" id="topic-dropdown"></div>
-          </th>
-          <th>Question</th>
-          <th>
-            Difficulty <span class="filter-icon" onclick="toggleDropdown('difficulty')">🔽</span>
-            <div class="filter-dropdown" id="difficulty-dropdown"></div>
-          </th>
-        </tr>
+        <tr><th>Topic</th><th>Question</th><th>Difficulty</th></tr>
       </thead>
       <tbody id="question-table-body"></tbody>
     </table>
   </div>
-
-  <!-- Page 2 -->
   <div id="detail-page" class="page">
     <button class="back-btn" onclick="goBack()">← Back</button>
-    <div class="qa-container">
-      <div class="qa-box">
-        <div class="question-header-bar" id="question-header-bar"></div>
-        <div id="question-box">Loading...</div>
-        <button id="show-solution-btn" class="solution-btn">👁️ Show Solution</button>
-      </div>
-      <div class="qa-box" id="answer-box" style="display: none;">
-        <span id="full-view-icon" title="Toggle Full View">🗖</span>
-        <div id="answer-content"></div>
-      </div>
+    <div class="question-header-bar">
+      <span id="question-title"></span>
+      <a id="external-link" href="#" target="_blank">🔗</a>
     </div>
+    <div class="tab-controls">
+      <button onclick="showTab('question')" class="active">Question</button>
+      <button onclick="showTab('code')">Code</button>
+      <button onclick="showTab('explanation')">Explanation</button>
+    </div>
+    <div id="question" class="content-section active"></div>
+    <div id="code" class="content-section"></div>
+    <div id="explanation" class="content-section"></div>
   </div>
 </main>
-
 <script>
-  const questionTableBody = document.getElementById('question-table-body');
-  const listPage = document.getElementById('list-page');
-  const detailPage = document.getElementById('detail-page');
-  const questionBox = document.getElementById('question-box');
-  const answerBox = document.getElementById('answer-box');
-  const questionHeaderBar = document.getElementById('question-header-bar');
-  const topicDropdown = document.getElementById('topic-dropdown');
-  const difficultyDropdown = document.getElementById('difficulty-dropdown');
-  const showBtn = document.getElementById('show-solution-btn');
-  const fullViewIcon = document.getElementById('full-view-icon');
-  const answerContent = document.getElementById('answer-content');
-
-  let data = [];
-  let filters = { topic: '', difficulty: '' };
+  const data = [];
+  let currentItem = null;
 
   function parseCSV(text) {
     const [headerLine, ...lines] = text.trim().split('\n');
-    const headers = headerLine.split(',').map(h => h.trim());
+    const headers = headerLine.split(',');
     return lines.map(line => {
       const values = line.split(',');
       return headers.reduce((obj, header, i) => {
-        obj[header] = values[i] ? values[i].trim() : '';
+        obj[header.trim()] = values[i]?.trim() || '';
         return obj;
       }, {});
     });
   }
 
   function fetchText(url) {
-    return fetch(url).then(res => res.ok ? res.text() : 'Error loading file');
+    return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
   }
 
   function renderTable() {
-    questionTableBody.innerHTML = '';
-    const filtered = data.filter(item =>
-      (!filters.topic || item.topic === filters.topic) &&
-      (!filters.difficulty || item.difficulty === filters.difficulty)
-    );
-
-    if (!filtered.length) {
-      questionTableBody.innerHTML = '<tr><td colspan="3">No questions found.</td></tr>';
-      return;
-    }
-
-    filtered.forEach((item) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${item.topic}</td>
-        <td style="color:blue;text-decoration:underline">${item["question header"]}</td>
-        <td>${item.difficulty}</td>
-      `;
-      row.onclick = () => showDetail(data.indexOf(item));
-      questionTableBody.appendChild(row);
+    const tbody = document.getElementById('question-table-body');
+    tbody.innerHTML = '';
+    data.forEach((item, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${item.topic}</td><td>${item["question header"]}</td><td>${item.difficulty}</td>`;
+      tr.onclick = () => showDetail(idx);
+      tbody.appendChild(tr);
     });
-  }
-
-  function populateFilterDropdown(type, values) {
-    const dropdown = type === 'topic' ? topicDropdown : difficultyDropdown;
-    dropdown.innerHTML = '';
-    const ul = document.createElement('ul');
-
-    const clear = document.createElement('li');
-    clear.textContent = 'Clear';
-    clear.classList.add('clear');
-    clear.onclick = () => {
-      filters[type] = '';
-      renderTable();
-      dropdown.style.display = 'none';
-    };
-    ul.appendChild(clear);
-
-    values.forEach(val => {
-      const li = document.createElement('li');
-      li.textContent = val;
-      li.onclick = () => {
-        filters[type] = val;
-        renderTable();
-        dropdown.style.display = 'none';
-      };
-      ul.appendChild(li);
-    });
-
-    dropdown.appendChild(ul);
-  }
-
-  function toggleDropdown(type) {
-    const dropdown = type === 'topic' ? topicDropdown : difficultyDropdown;
-    const other = type === 'topic' ? difficultyDropdown : topicDropdown;
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    other.style.display = 'none';
   }
 
   function showDetail(index) {
-    const item = data[index];
-    questionBox.textContent = 'Loading...';
-    answerBox.style.display = 'none';
-    answerContent.textContent = '';
-    fullViewIcon.style.display = 'none';
-    fullViewIcon.classList.remove("fullscreen-float");
-    answerBox.classList.remove("fullscreen");
+    currentItem = data[index];
+    document.getElementById('question-title').textContent = currentItem["question header"];
+    document.getElementById('external-link').href = currentItem["problem link"];
 
-    questionHeaderBar.innerHTML = `
-      <span>${item["question header"]}</span>
-      <a href="${item["problem link"]}" target="_blank" title="Open external problem">🔗</a>
-    `;
+    fetchText(currentItem.question).then(t => document.getElementById('question').textContent = t);
+    fetchText(currentItem.code).then(t => document.getElementById('code').textContent = `// Language: ${currentItem["code language"]}\n` + t);
+    fetchText(currentItem.explanation).then(t => document.getElementById('explanation').textContent = t);
 
-    fetchText(item.question).then(text => questionBox.textContent = text);
-
-    showBtn.style.display = "inline-block";
-    showBtn.onclick = () => {
-      answerBox.style.display = 'block';
-      fullViewIcon.style.display = 'inline';
-      answerContent.textContent = 'Loading...';
-      fetchText(item.answer).then(text => {
-        answerContent.textContent = text;
-      });
-      showBtn.style.display = 'none';
-    };
-
-    listPage.classList.remove('active');
-    detailPage.classList.add('active');
+    showTab('question');
+    document.getElementById('list-page').classList.remove('active');
+    document.getElementById('detail-page').classList.add('active');
   }
 
   function goBack() {
-    detailPage.classList.remove('active');
-    listPage.classList.add('active');
+    document.getElementById('list-page').classList.add('active');
+    document.getElementById('detail-page').classList.remove('active');
   }
 
-  fullViewIcon.onclick = () => {
-    answerBox.classList.toggle("fullscreen");
-    fullViewIcon.classList.toggle("fullscreen-float");
-  };
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === "Escape" && answerBox.classList.contains("fullscreen")) {
-      answerBox.classList.remove("fullscreen");
-      fullViewIcon.classList.remove("fullscreen-float");
-    }
-  });
+  function showTab(tab) {
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    document.querySelectorAll('.tab-controls button').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.tab-controls button[onclick*="${tab}"]`).classList.add('active');
+  }
 
   fetch('data/questions.csv')
     .then(res => res.text())
     .then(text => {
-      data = parseCSV(text);
-      const topics = [...new Set(data.map(d => d.topic))];
-      const difficulties = [...new Set(data.map(d => d.difficulty))];
-      populateFilterDropdown('topic', topics);
-      populateFilterDropdown('difficulty', difficulties);
+      data.push(...parseCSV(text));
       renderTable();
     });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.filter-icon') && !e.target.closest('.filter-dropdown')) {
-      topicDropdown.style.display = 'none';
-      difficultyDropdown.style.display = 'none';
-    }
-  });
 </script>
-
 </body>
 </html>
