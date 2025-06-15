@@ -113,6 +113,19 @@
     .question-header-bar a:hover {
       text-decoration: underline;
     }
+    .solution-btn {
+      margin-top: 1em;
+      padding: 0.5em 1em;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95em;
+      border-radius: 5px;
+    }
+    .solution-btn:hover {
+      background-color: #218838;
+    }
   </style>
 </head>
 <body>
@@ -150,8 +163,9 @@
       <div class="qa-box">
         <div class="question-header-bar" id="question-header-bar"></div>
         <div id="question-box">Loading...</div>
+        <button id="show-solution-btn" class="solution-btn">👁️ Show Solution</button>
       </div>
-      <div class="qa-box" id="answer-box">Loading...</div>
+      <div class="qa-box" id="answer-box" style="display: none;"></div>
     </div>
   </div>
 </main>
@@ -165,6 +179,7 @@
   const questionHeaderBar = document.getElementById('question-header-bar');
   const topicDropdown = document.getElementById('topic-dropdown');
   const difficultyDropdown = document.getElementById('difficulty-dropdown');
+  const showBtn = document.getElementById('show-solution-btn');
 
   let data = [];
   let filters = { topic: '', difficulty: '' };
@@ -248,7 +263,8 @@
   function showDetail(index) {
     const item = data[index];
     questionBox.textContent = 'Loading...';
-    answerBox.textContent = 'Loading...';
+    answerBox.style.display = 'none';
+    answerBox.textContent = '';
 
     questionHeaderBar.innerHTML = `
       <a href="${item["problem link"]}" target="_blank" title="Open external problem">🔗</a>
@@ -256,7 +272,16 @@
     `;
 
     fetchText(item.question).then(text => questionBox.textContent = text);
-    fetchText(item.answer).then(text => answerBox.textContent = text);
+
+    showBtn.style.display = "inline-block";
+    showBtn.onclick = () => {
+      answerBox.textContent = 'Loading...';
+      fetchText(item.answer).then(text => {
+        answerBox.textContent = text;
+        answerBox.style.display = 'block';
+        showBtn.style.display = 'none';
+      });
+    };
 
     listPage.classList.remove('active');
     detailPage.classList.add('active');
