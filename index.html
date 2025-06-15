@@ -1,52 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flexible Question Viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class'
     }
   </script>
+  <style>
+    .resizer {
+      background-color: #a1a1aa;
+    }
+    .resizer:hover {
+      background-color: #71717a;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-  <!-- Header -->
-  <header class="fixed top-0 w-full bg-gray-800 text-white p-4 shadow z-50 flex justify-between items-center">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
+  <header class="fixed top-0 left-0 w-full bg-gray-800 text-white shadow z-10 px-6 py-3 flex justify-between items-center">
     <h1 class="text-xl font-semibold">Flexible Question Viewer</h1>
-    <button onclick="toggleDarkMode()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
-      🌓
-    </button>
+    <button class="bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded" onclick="toggleDarkMode()">🌓</button>
   </header>
 
-  <!-- Main content -->
-  <main class="pt-20 px-4 max-w-7xl mx-auto">
-
+  <main class="pt-20 px-4 max-w-6xl mx-auto">
     <!-- List Page -->
-    <div id="list-page" class="block">
+    <div id="list-page" class="page">
       <h2 class="text-2xl font-semibold mb-4">Questions</h2>
-
-      <!-- Filters -->
       <div class="flex flex-wrap gap-4 mb-6">
         <div class="flex flex-col">
           <label class="font-medium mb-1">Topic</label>
-          <select id="topic-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:border-gray-700"></select>
+          <select id="topic-filter" onchange="renderTable()"
+            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600">
+          </select>
         </div>
         <div class="flex flex-col">
           <label class="font-medium mb-1">Difficulty</label>
-          <select id="difficulty-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:border-gray-700"></select>
+          <select id="difficulty-filter" onchange="renderTable()"
+            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600">
+          </select>
         </div>
         <div class="flex flex-col">
           <label class="font-medium mb-1">List</label>
-          <select id="list-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:border-gray-700"></select>
+          <select id="list-filter" onchange="renderTable()"
+            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600">
+          </select>
         </div>
       </div>
 
-      <!-- Table -->
       <div class="overflow-x-auto rounded shadow bg-white dark:bg-gray-800">
         <table class="min-w-full text-sm text-left table-auto">
-          <thead class="bg-gray-100 dark:bg-gray-700">
+          <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
             <tr>
               <th class="px-4 py-2">Topic</th>
               <th class="px-4 py-2">Question</th>
@@ -54,37 +60,39 @@
               <th class="px-4 py-2">List</th>
             </tr>
           </thead>
-          <tbody id="question-table-body" class="divide-y dark:divide-gray-700"></tbody>
+          <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100">
+          </tbody>
         </table>
       </div>
     </div>
 
     <!-- Detail Page -->
     <div id="detail-page" class="hidden">
-      <button onclick="goBack()" class="mt-4 mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
-        ← Back
-      </button>
+      <button class="mt-4 mb-4 px-4 py-2 rounded bg-indigo-500 text-white hover:bg-indigo-600" onclick="goBack()">← Back</button>
 
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
-        <h3 id="question-title" class="text-xl font-semibold"></h3>
-        <a id="external-link" href="#" target="_blank" class="text-indigo-500 hover:underline">🔗 View Problem</a>
+      <div class="flex justify-between items-center mb-4">
+        <span id="question-title" class="text-xl font-semibold"></span>
+        <a id="external-link" href="#" target="_blank" class="text-indigo-400 hover:underline text-lg">🔗</a>
       </div>
 
-      <!-- Toggle Layout -->
       <div class="flex flex-wrap gap-4 mb-4">
-        <label><input type="checkbox" onchange="togglePane('question')" checked class="mr-1"> Question</label>
+        <label><input type="checkbox" checked onchange="togglePane('question')" class="mr-1"> Question</label>
         <label><input type="checkbox" onchange="togglePane('code')" class="mr-1"> Code</label>
         <label><input type="checkbox" onchange="togglePane('explanation')" class="mr-1"> Explanation</label>
       </div>
 
-      <!-- Resizable Grid -->
-      <div id="resizable-grid" class="flex flex-col sm:flex-row gap-4">
-        <div id="pane-question" class="flex-1 p-4 bg-white dark:bg-gray-800 rounded overflow-auto whitespace-pre-wrap font-mono text-sm"></div>
-        <div id="pane-code" class="hidden flex-1 p-4 bg-white dark:bg-gray-800 rounded overflow-auto whitespace-pre-wrap font-mono text-sm"></div>
-        <div id="pane-explanation" class="hidden flex-1 p-4 bg-white dark:bg-gray-800 rounded overflow-auto whitespace-pre-wrap font-mono text-sm"></div>
+      <div id="resizable-grid" class="flex flex-col md:flex-row w-full border rounded overflow-hidden">
+        <div id="pane-question" class="flex-1 p-4 overflow-auto border-b md:border-b-0 md:border-r dark:border-gray-700">
+          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
+        </div>
+        <div id="pane-code" class="hidden flex-1 p-4 overflow-auto border-b md:border-b-0 md:border-r dark:border-gray-700">
+          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
+        </div>
+        <div id="pane-explanation" class="hidden flex-1 p-4 overflow-auto">
+          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
+        </div>
       </div>
     </div>
-
   </main>
 
   <script>
@@ -145,7 +153,7 @@
             (listVal && !listTags.includes(listVal))) return;
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer';
+        tr.className = "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer";
         tr.innerHTML = `
           <td class="px-4 py-2">${item.topic}</td>
           <td class="px-4 py-2">${item["question header"]}</td>
@@ -163,19 +171,19 @@
       document.getElementById('external-link').href = item["problem link"];
 
       fetchText(item.question).then(t =>
-        document.getElementById('pane-question').innerHTML = escapeHTML(t));
+        document.querySelector('#pane-question pre').innerHTML = escapeHTML(t));
       fetchText(item.code).then(t =>
-        document.getElementById('pane-code').innerHTML = `// Language: ${item["code language"]}\n${escapeHTML(t)}`);
+        document.querySelector('#pane-code pre').innerHTML = `// Language: ${item["code language"]}\n` + escapeHTML(t));
       fetchText(item.explanation).then(t =>
-        document.getElementById('pane-explanation').innerHTML = escapeHTML(t));
+        document.querySelector('#pane-explanation pre').innerHTML = escapeHTML(t));
 
-      ['question', 'code', 'explanation'].forEach(type => {
-        const pane = document.getElementById(`pane-${type}`);
-        const checkbox = document.querySelector(`input[onchange*="${type}"]`);
-        const show = type === 'question';  // show question pane by default
-        checkbox.checked = show;
-        pane.classList.toggle('hidden', !show);
-      });
+      document.querySelector("input[onchange*=question]").checked = true;
+      document.querySelector("input[onchange*=code]").checked = false;
+      document.querySelector("input[onchange*=explanation]").checked = false;
+
+      togglePane('question');
+      togglePane('code');
+      togglePane('explanation');
 
       document.getElementById('list-page').classList.add('hidden');
       document.getElementById('detail-page').classList.remove('hidden');
@@ -188,27 +196,26 @@
 
     function togglePane(type) {
       const pane = document.getElementById(`pane-${type}`);
-      const checkbox = document.querySelector(`input[onchange*="${type}"]`);
+      const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
       pane.classList.toggle('hidden', !checkbox.checked);
     }
 
     function toggleDarkMode() {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
     }
-
-    fetch('data/questions.csv')
-      .then(res => res.text())
-      .then(text => {
-        data.push(...parseCSV(text));
-        renderFilters();
-        renderTable();
-      });
 
     window.onload = () => {
       if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark');
+        document.documentElement.classList.add('dark');
       }
+      fetch('data/questions.csv')
+        .then(res => res.text())
+        .then(text => {
+          data.push(...parseCSV(text));
+          renderFilters();
+          renderTable();
+        });
     };
   </script>
 </body>
