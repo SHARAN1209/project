@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Flexible Question Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
       --bg-color: #f5f7fa;
@@ -18,6 +19,10 @@
       --text-dark: #f3f4f6;
       --hover-dark: #1f2937;
       --border-dark: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -37,12 +42,15 @@
       position: fixed;
       top: 0;
       width: 100%;
-      background: var(--header-bg);
-      color: var(--header-color);
+      background: #111827;
+      color: white;
       padding: 0.6em 1em;
       font-size: 1.2em;
       z-index: 1000;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     header h1 {
@@ -51,9 +59,6 @@
     }
 
     .dark-toggle {
-      position: absolute;
-      right: 1em;
-      top: 0.8em;
       background: var(--primary);
       color: white;
       border: none;
@@ -68,25 +73,27 @@
     }
 
     main {
-      padding: 5em 1em 1em; 
+      padding: 5em 1em 1em;
       max-width: 1200px;
       margin: auto;
-      transition: opacity 0.4s ease;
     }
 
     .filters {
       display: flex;
-      gap: 1em;
       flex-wrap: wrap;
+      gap: 1em;
       margin-bottom: 1.5em;
     }
 
     .filters > div {
-      flex: 1 1 200px;
+      flex: 1 1 150px;
+      min-width: 120px;
     }
 
     .filters label {
       font-weight: 600;
+      display: block;
+      margin-bottom: 0.2em;
     }
 
     .filters select {
@@ -114,14 +121,19 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
-    body.dark-mode table {
-      background: #1f2937;
+    .table-wrapper {
+      overflow-x: auto;
     }
 
     th, td {
       padding: 1em;
       border-bottom: 1px solid var(--border-color);
       text-align: left;
+      white-space: nowrap;
+    }
+
+    body.dark-mode table {
+      background: #1f2937;
     }
 
     body.dark-mode th, body.dark-mode td {
@@ -139,15 +151,10 @@
 
     .page {
       display: none;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
     .page.active {
       display: block;
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .back-btn {
@@ -173,13 +180,13 @@
       font-size: 1.2em;
       margin-bottom: 1em;
       flex-wrap: wrap;
+      gap: 1em;
     }
 
     .question-header-bar a {
       color: var(--primary);
       font-size: 1.3em;
       text-decoration: none;
-      margin-top: 0.4em;
     }
 
     .layout-toggle {
@@ -197,12 +204,13 @@
 
     .resizable-grid {
       display: flex;
+      flex-direction: row;
       width: 100%;
-      min-height: 300px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
       overflow: hidden;
       background: white;
+      flex-wrap: nowrap;
     }
 
     body.dark-mode .resizable-grid {
@@ -210,20 +218,21 @@
       border-color: var(--border-dark);
     }
 
-    .pane {
-      flex: 1;
-      padding: 1.2em;
+    .resizable-grid .pane {
+      flex-grow: 1;
+      padding: 1em;
+      overflow-x: auto;
       overflow-y: auto;
       border-right: 1px solid var(--border-color);
-      min-height: 100px;
+      min-width: 200px;
     }
 
-    .pane:last-child {
-      border-right: none;
-    }
-
-    body.dark-mode .pane {
+    body.dark-mode .resizable-grid .pane {
       border-color: var(--border-dark);
+    }
+
+    .resizable-grid .pane:last-child {
+      border-right: none;
     }
 
     .resizer {
@@ -262,79 +271,196 @@
       background-color: #6b7280;
     }
 
-    /* Responsive enhancements */
     @media (max-width: 768px) {
-      .filters {
-        flex-direction: column;
-      }
-
       .resizable-grid {
         flex-direction: column;
       }
 
-      .pane {
-        border-right: none !important;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      body.dark-mode .pane {
-        border-bottom: 1px solid var(--border-dark);
-      }
-
       .resizer {
+        height: 5px;
         width: 100%;
-        height: 6px;
         cursor: row-resize;
       }
 
-      .pane:last-child {
-        border-bottom: none;
+      th, td {
+        padding: 0.6em;
       }
 
-      table {
-        display: block;
-        overflow-x: auto;
+      .filters {
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Body remains unchanged -->
-  <!-- JS remains mostly unchanged -->
+  <header>
+    <h1>Flexible Question Viewer</h1>
+    <button class="dark-toggle" onclick="toggleDarkMode()">🌓</button>
+  </header>
+  <main>
+    <div id="list-page" class="page active">
+      <h2>Questions</h2>
+      <div class="filters">
+        <div><label>Topic:</label><select id="topic-filter" onchange="renderTable()"></select></div>
+        <div><label>Difficulty:</label><select id="difficulty-filter" onchange="renderTable()"></select></div>
+        <div><label>List:</label><select id="list-filter" onchange="renderTable()"></select></div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Question</th>
+              <th>Difficulty</th>
+              <th>List</th>
+            </tr>
+          </thead>
+          <tbody id="question-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="detail-page" class="page">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div class="question-header-bar">
+        <span id="question-title"></span>
+        <a id="external-link" href="#" target="_blank">🔗</a>
+      </div>
+
+      <div class="layout-toggle">
+        <label><input type="checkbox" onchange="togglePane('question')" checked> Question</label>
+        <label><input type="checkbox" onchange="togglePane('code')"> Code</label>
+        <label><input type="checkbox" onchange="togglePane('explanation')"> Explanation</label>
+      </div>
+
+      <div class="resizable-grid" id="resizable-grid">
+        <div class="pane" id="pane-question"></div>
+        <div class="resizer hidden" id="resizer1"></div>
+        <div class="pane hidden" id="pane-code"></div>
+        <div class="resizer hidden" id="resizer2"></div>
+        <div class="pane hidden" id="pane-explanation"></div>
+      </div>
+    </div>
+  </main>
+
   <script>
-    // ... your JS stays mostly the same ...
+    const data = [];
+
+    function parseCSV(text) {
+      const [headerLine, ...lines] = text.trim().split('\n');
+      const headers = headerLine.split(',').map(h => h.trim());
+      return lines.map(line => {
+        const values = line.split(',').map(v => v.trim());
+        return headers.reduce((obj, header, i) => {
+          obj[header] = values[i] || '';
+          return obj;
+        }, {});
+      });
+    }
+
+    function fetchText(url) {
+      return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, tag => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
+      ));
+    }
+
+    function renderFilters() {
+      const topicSet = new Set(data.map(d => d.topic));
+      const diffSet = new Set(data.map(d => d.difficulty));
+      const listSet = new Set();
+
+      data.forEach(d => {
+        if (d.lists) {
+          d.lists.split(';').map(s => s.trim()).forEach(tag => listSet.add(tag));
+        }
+      });
+
+      document.getElementById('topic-filter').innerHTML =
+        '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
+      document.getElementById('difficulty-filter').innerHTML =
+        '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+      document.getElementById('list-filter').innerHTML =
+        '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('question-table-body');
+      const topicVal = document.getElementById('topic-filter').value;
+      const diffVal = document.getElementById('difficulty-filter').value;
+      const listVal = document.getElementById('list-filter').value;
+
+      tbody.innerHTML = '';
+      data.forEach((item, idx) => {
+        const listTags = (item.lists || '').split(';').map(s => s.trim());
+        if ((topicVal && item.topic !== topicVal) ||
+            (diffVal && item.difficulty !== diffVal) ||
+            (listVal && !listTags.includes(listVal))) return;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.topic}</td>
+          <td>${item["question header"]}</td>
+          <td>${item.difficulty}</td>
+          <td>${item.lists || ''}</td>
+        `;
+        tr.onclick = () => showDetail(idx);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function showDetail(index) {
+      const item = data[index];
+      document.getElementById('question-title').textContent = item["question header"];
+      document.getElementById('external-link').href = item["problem link"];
+
+      fetchText(item.question).then(t =>
+        document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
+      fetchText(item.code).then(t =>
+        document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`);
+      fetchText(item.explanation).then(t =>
+        document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
+
+      ["question", "code", "explanation"].forEach(type => {
+        document.querySelector(`input[onchange*="${type}"]`).checked = (type === "question");
+        document.getElementById(`pane-${type}`).classList.toggle("hidden", type !== "question");
+      });
+
+      document.getElementById('resizer1').classList.add('hidden');
+      document.getElementById('resizer2').classList.add('hidden');
+
+      document.getElementById('list-page').classList.remove('active');
+      document.getElementById('detail-page').classList.add('active');
+    }
+
+    function goBack() {
+      document.getElementById('detail-page').classList.remove('active');
+      document.getElementById('list-page').classList.add('active');
+    }
 
     function togglePane(type) {
       const pane = document.getElementById(`pane-${type}`);
       const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
+      const resizer = document.getElementById(`resizer${type === 'question' ? 1 : type === 'code' ? 2 : ''}`);
       const show = checkbox.checked;
       pane.classList.toggle('hidden', !show);
-
-      const resizer1 = document.getElementById('resizer1');
-      const resizer2 = document.getElementById('resizer2');
-      const showCode = document.querySelector("input[onchange*=code]").checked;
-      const showExp = document.querySelector("input[onchange*=explanation]").checked;
-
-      resizer1.classList.toggle('hidden', !(showCode && document.getElementById('pane-question').classList.contains('hidden') === false));
-      resizer2.classList.toggle('hidden', !(showExp && showCode));
+      if (resizer) resizer.classList.toggle('hidden', !show);
     }
 
     function initResize(resizer, leftPane, rightPane) {
-      let startX, startY, startLeftWidth, startRightWidth;
-
-      const isVertical = window.innerWidth <= 768;
-      const prop = isVertical ? 'clientY' : 'clientX';
-
+      let startX;
       resizer.addEventListener('mousedown', function(e) {
         startX = e.clientX;
-        startY = e.clientY;
-        startLeftWidth = leftPane.getBoundingClientRect().width;
-        startRightWidth = rightPane.getBoundingClientRect().width;
+        const leftWidth = leftPane.getBoundingClientRect().width;
+        const rightWidth = rightPane.getBoundingClientRect().width;
 
         function onMouseMove(e) {
-          const delta = isVertical ? e.clientY - startY : e.clientX - startX;
-          leftPane.style.flex = `0 0 ${startLeftWidth + delta}px`;
-          rightPane.style.flex = `0 0 ${startRightWidth - delta}px`;
+          const dx = e.clientX - startX;
+          leftPane.style.flex = `0 0 ${leftWidth + dx}px`;
+          rightPane.style.flex = `0 0 ${rightWidth - dx}px`;
         }
 
         function onMouseUp() {
@@ -346,6 +472,27 @@
         document.addEventListener('mouseup', onMouseUp);
       });
     }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    fetch('data/questions.csv')
+      .then(res => res.text())
+      .then(text => {
+        data.push(...parseCSV(text));
+        renderFilters();
+        renderTable();
+      });
+
+    window.onload = () => {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+      initResize(document.getElementById('resizer1'), document.getElementById('pane-question'), document.getElementById('pane-code'));
+      initResize(document.getElementById('resizer2'), document.getElementById('pane-code'), document.getElementById('pane-explanation'));
+    };
   </script>
 </body>
 </html>
