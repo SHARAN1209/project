@@ -52,6 +52,19 @@
       white-space: pre-wrap;
       overflow-y: auto;
       max-height: 80vh;
+      position: relative;
+    }
+    .fullscreen {
+      position: fixed;
+      top: 1em;
+      left: 1em;
+      right: 1em;
+      bottom: 1em;
+      background: white;
+      z-index: 1000;
+      overflow: auto;
+      padding: 1em;
+      border: 2px solid #007bff;
     }
     .back-btn {
       margin: 1em;
@@ -126,17 +139,13 @@
     .solution-btn:hover {
       background-color: #218838;
     }
-    .fullscreen {
-      position: fixed;
-      top: 1em;
-      left: 1em;
-      right: 1em;
-      bottom: 1em;
-      background: white;
-      z-index: 1000;
-      overflow: auto;
-      padding: 1em;
-      border: 2px solid #007bff;
+    #full-view-icon {
+      position: absolute;
+      top: 0.5em;
+      right: 0.5em;
+      cursor: pointer;
+      font-size: 1.2em;
+      display: none;
     }
   </style>
 </head>
@@ -177,9 +186,11 @@
         <div id="question-box">Loading...</div>
         <button id="show-solution-btn" class="solution-btn">👁️ Show Solution</button>
       </div>
-      <div class="qa-box" id="answer-box" style="display: none;"></div>
+      <div class="qa-box" id="answer-box" style="display: none;">
+        <span id="full-view-icon" title="Toggle Full View">🗖</span>
+        <div id="answer-content"></div>
+      </div>
     </div>
-    <button id="full-view-btn" class="solution-btn" style="display: none;">🗖 Full View</button>
   </div>
 </main>
 
@@ -193,7 +204,8 @@
   const topicDropdown = document.getElementById('topic-dropdown');
   const difficultyDropdown = document.getElementById('difficulty-dropdown');
   const showBtn = document.getElementById('show-solution-btn');
-  const fullViewBtn = document.getElementById('full-view-btn');
+  const fullViewIcon = document.getElementById('full-view-icon');
+  const answerContent = document.getElementById('answer-content');
 
   let data = [];
   let filters = { topic: '', difficulty: '' };
@@ -278,8 +290,8 @@
     const item = data[index];
     questionBox.textContent = 'Loading...';
     answerBox.style.display = 'none';
-    answerBox.textContent = '';
-    fullViewBtn.style.display = 'none';
+    answerContent.textContent = '';
+    fullViewIcon.style.display = 'none';
     answerBox.classList.remove("fullscreen");
 
     questionHeaderBar.innerHTML = `
@@ -291,20 +303,13 @@
 
     showBtn.style.display = "inline-block";
     showBtn.onclick = () => {
-      answerBox.textContent = 'Loading...';
+      answerBox.style.display = 'block';
+      fullViewIcon.style.display = 'inline';
+      answerContent.textContent = 'Loading...';
       fetchText(item.answer).then(text => {
-        answerBox.textContent = text;
-        answerBox.style.display = 'block';
-        showBtn.style.display = 'none';
-        fullViewBtn.style.display = 'inline-block';
+        answerContent.textContent = text;
       });
-    };
-
-    fullViewBtn.onclick = () => {
-      answerBox.classList.toggle("fullscreen");
-      fullViewBtn.textContent = answerBox.classList.contains("fullscreen")
-        ? "🗕 Exit Full View"
-        : "🗖 Full View";
+      showBtn.style.display = 'none';
     };
 
     listPage.classList.remove('active');
@@ -315,6 +320,16 @@
     detailPage.classList.remove('active');
     listPage.classList.add('active');
   }
+
+  fullViewIcon.onclick = () => {
+    answerBox.classList.toggle("fullscreen");
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape" && answerBox.classList.contains("fullscreen")) {
+      answerBox.classList.remove("fullscreen");
+    }
+  });
 
   fetch('data/questions.csv')
     .then(res => res.text())
