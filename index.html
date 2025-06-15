@@ -32,9 +32,6 @@
     .layout-toggle {
       display: flex; gap: 0.5em; margin-bottom: 1em;
     }
-    .layout-toggle label {
-      font-weight: bold;
-    }
 
     .resizable-grid {
       display: flex;
@@ -82,7 +79,12 @@
     </div>
     <table>
       <thead>
-        <tr><th>Topic</th><th>Question</th><th>Difficulty</th><th>List</th></tr>
+        <tr>
+          <th>Topic</th>
+          <th>Question</th>
+          <th>Difficulty</th>
+          <th>List</th>
+        </tr>
       </thead>
       <tbody id="question-table-body"></tbody>
     </table>
@@ -110,16 +112,17 @@
     </div>
   </div>
 </main>
+
 <script>
   const data = [];
 
   function parseCSV(text) {
     const [headerLine, ...lines] = text.trim().split('\n');
-    const headers = headerLine.split(',');
+    const headers = headerLine.split(',').map(h => h.trim());
     return lines.map(line => {
-      const values = line.split(',');
+      const values = line.split(',').map(v => v.trim());
       return headers.reduce((obj, header, i) => {
-        obj[header.trim()] = values[i]?.trim() || '';
+        obj[header] = values[i] || '';
         return obj;
       }, {});
     });
@@ -141,18 +144,17 @@
     const listSet = new Set();
 
     data.forEach(d => {
-      (d.list || '').split('|').map(s => s.trim()).forEach(tag => {
-        if (tag) listSet.add(tag);
-      });
+      if (d.lists) {
+        d.lists.split(';').map(s => s.trim()).forEach(tag => listSet.add(tag));
+      }
     });
 
-    const topicSelect = document.getElementById('topic-filter');
-    const diffSelect = document.getElementById('difficulty-filter');
-    const listSelect = document.getElementById('list-filter');
-
-    topicSelect.innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
-    diffSelect.innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
-    listSelect.innerHTML = '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
+    document.getElementById('topic-filter').innerHTML =
+      '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
+    document.getElementById('difficulty-filter').innerHTML =
+      '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+    document.getElementById('list-filter').innerHTML =
+      '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
   }
 
   function renderTable() {
@@ -160,16 +162,22 @@
     const topicVal = document.getElementById('topic-filter').value;
     const diffVal = document.getElementById('difficulty-filter').value;
     const listVal = document.getElementById('list-filter').value;
+
     tbody.innerHTML = '';
     data.forEach((item, idx) => {
-      const lists = (item.list || '').split(',').map(s => s.trim());
-      if (
-        (topicVal && item.topic !== topicVal) ||
-        (diffVal && item.difficulty !== diffVal) ||
-        (listVal && !lists.includes(listVal))
-      ) return;
+      const listTags = (item.lists || '').split(';').map(s => s.trim());
+
+      if ((topicVal && item.topic !== topicVal) ||
+          (diffVal && item.difficulty !== diffVal) ||
+          (listVal && !listTags.includes(listVal))) return;
+
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${item.topic}</td><td>${item["question header"]}</td><td>${item.difficulty}</td><td>${item.list || ''}</td>`;
+      tr.innerHTML = `
+        <td>${item.topic}</td>
+        <td>${item["question header"]}</td>
+        <td>${item.difficulty}</td>
+        <td>${item.lists || ''}</td>
+      `;
       tr.onclick = () => showDetail(idx);
       tbody.appendChild(tr);
     });
@@ -180,19 +188,17 @@
     document.getElementById('question-title').textContent = item["question header"];
     document.getElementById('external-link').href = item["problem link"];
 
-    fetchText(item.question).then(t => {
-      document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`;
-    });
-    fetchText(item.code).then(t => {
-      document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`;
-    });
-    fetchText(item.explanation).then(t => {
-      document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`;
-    });
+    fetchText(item.question).then(t =>
+      document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
+    fetchText(item.code).then(t =>
+      document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`);
+    fetchText(item.explanation).then(t =>
+      document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
 
     document.querySelector("input[onchange*=question]").checked = true;
     document.querySelector("input[onchange*=code]").checked = false;
     document.querySelector("input[onchange*=explanation]").checked = false;
+
     document.getElementById('pane-question').classList.remove('hidden');
     document.getElementById('pane-code').classList.add('hidden');
     document.getElementById('pane-explanation').classList.add('hidden');
@@ -251,7 +257,7 @@
   window.onload = () => {
     initResize(document.getElementById('resizer1'), document.getElementById('pane-question'), document.getElementById('pane-code'));
     initResize(document.getElementById('resizer2'), document.getElementById('pane-code'), document.getElementById('pane-explanation'));
-  }
+  };
 </script>
 </body>
 </html>
