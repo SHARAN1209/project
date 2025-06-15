@@ -141,7 +141,7 @@
     const listSet = new Set();
 
     data.forEach(d => {
-      (d.list || '').split(',').map(s => s.trim()).forEach(tag => {
+      (d.list || '').split('|').map(s => s.trim()).forEach(tag => {
         if (tag) listSet.add(tag);
       });
     });
