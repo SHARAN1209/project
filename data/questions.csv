@@ -1,4 +1,2 @@
 topic,question header,difficulty,question,code,explanation,problem link,code language,list
-Arrays,Find Maximum Subarray,medium,questions/q1.txt,codes/q1_code.txt,explanations/q1_exp.txt,https://leetcode.com/problems/maximum-subarray/,Java,Grind 75
-Strings,Check Anagram,easy,questions/q2.txt,codes/q1.txt,explanations/q1.txt,https://leetcode.com/problems/valid-anagram/,Java,NeetCode 150
-Graphs,Detect Cycle in Graph,hard,questions/q3.txt,codes/q3_code.txt,explanations/q3_exp.txt,https://leetcode.com/problems/course-schedule/,Java,Grind 75
+Array,Two Sum,Easy,question1.txt,code1.py,explanation1.txt,https://link,python,Grind 75, NeetCode 150
