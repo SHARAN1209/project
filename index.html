@@ -126,6 +126,18 @@
     .solution-btn:hover {
       background-color: #218838;
     }
+    .fullscreen {
+      position: fixed;
+      top: 1em;
+      left: 1em;
+      right: 1em;
+      bottom: 1em;
+      background: white;
+      z-index: 1000;
+      overflow: auto;
+      padding: 1em;
+      border: 2px solid #007bff;
+    }
   </style>
 </head>
 <body>
@@ -167,6 +179,7 @@
       </div>
       <div class="qa-box" id="answer-box" style="display: none;"></div>
     </div>
+    <button id="full-view-btn" class="solution-btn" style="display: none;">🗖 Full View</button>
   </div>
 </main>
 
@@ -180,6 +193,7 @@
   const topicDropdown = document.getElementById('topic-dropdown');
   const difficultyDropdown = document.getElementById('difficulty-dropdown');
   const showBtn = document.getElementById('show-solution-btn');
+  const fullViewBtn = document.getElementById('full-view-btn');
 
   let data = [];
   let filters = { topic: '', difficulty: '' };
@@ -265,6 +279,8 @@
     questionBox.textContent = 'Loading...';
     answerBox.style.display = 'none';
     answerBox.textContent = '';
+    fullViewBtn.style.display = 'none';
+    answerBox.classList.remove("fullscreen");
 
     questionHeaderBar.innerHTML = `
       <a href="${item["problem link"]}" target="_blank" title="Open external problem">🔗</a>
@@ -280,7 +296,15 @@
         answerBox.textContent = text;
         answerBox.style.display = 'block';
         showBtn.style.display = 'none';
+        fullViewBtn.style.display = 'inline-block';
       });
+    };
+
+    fullViewBtn.onclick = () => {
+      answerBox.classList.toggle("fullscreen");
+      fullViewBtn.textContent = answerBox.classList.contains("fullscreen")
+        ? "🗕 Exit Full View"
+        : "🗖 Full View";
     };
 
     listPage.classList.remove('active');
