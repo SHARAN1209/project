@@ -147,7 +147,7 @@
 
       tbody.innerHTML = '';
       data.forEach((item, idx) => {
-        const listTags = (item.lists || '').split(';').map(s => s.trim());
+        const listTags = (item.lists || '').split('|').map(s => s.trim());
         if ((topicVal && item.topic !== topicVal) ||
             (diffVal && item.difficulty !== diffVal) ||
             (listVal && !listTags.includes(listVal))) return;
