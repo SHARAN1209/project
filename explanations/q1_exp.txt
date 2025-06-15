@@ -1,0 +1,2 @@
+[Expected Approach] By using HashSet Data Structure – O(n) Time and O(n) Space
+The main idea is to insert each value into a HashSet, which only stores unique elements. If any insertion fails or if any elements are already exits in HashSet, it means a duplicate exists, so return true. If all insertions succeed, it indicates that all elements are unique, so return false.
