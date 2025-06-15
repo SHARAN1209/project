@@ -34,12 +34,20 @@
     }
 
     header {
-      background-color: var(--header-bg);
-      color: var(--header-color);
-      padding: 1.2em;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      position: relative;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #111827;
+      color: white;
+      padding: 0.6em 1em;
+      font-size: 1.2em;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.4em;
+      margin: 0;
     }
 
     .dark-toggle {
@@ -60,7 +68,7 @@
     }
 
     main {
-      padding: 2em;
+      padding: 5em 1em 1em; 
       max-width: 1200px;
       margin: auto;
       transition: opacity 0.4s ease;
@@ -283,13 +291,13 @@
       </table>
     </div>
 
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    
     <div id="detail-page" class="page">
       <div class="question-header-bar">
         <span id="question-title"></span>
         <a id="external-link" href="#" target="_blank">🔗</a>
       </div>
-      
-      <button class="back-btn" onclick="goBack()">← Back</button>
       
       <div class="layout-toggle">
         <label><input type="checkbox" onchange="togglePane('question')" checked> Question</label>
