@@ -293,11 +293,12 @@
     answerContent.textContent = '';
     fullViewIcon.style.display = 'none';
     answerBox.classList.remove("fullscreen");
-
+    
     questionHeaderBar.innerHTML = `
-      <a href="${item["problem link"]}" target="_blank" title="Open external problem">🔗</a>
       <span>${item["question header"]}</span>
+      <a href="${item["problem link"]}" target="_blank" title="Open external problem" style="margin-left: 0.5em;">🔗</a>
     `;
+
 
     fetchText(item.question).then(text => questionBox.textContent = text);
 
