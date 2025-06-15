@@ -31,6 +31,10 @@
       font-size: 1.1em; margin-bottom: 1em;
     }
     .question-header-bar a { text-decoration: none; color: #007bff; }
+    .filters {
+      display: flex; gap: 1em; margin-top: 1em;
+    }
+    .filters label { font-weight: bold; margin-right: 0.5em; }
   </style>
 </head>
 <body>
@@ -38,6 +42,16 @@
 <main>
   <div id="list-page" class="page active">
     <h2>Questions</h2>
+    <div class="filters">
+      <div>
+        <label for="topic-filter">Topic:</label>
+        <select id="topic-filter" onchange="renderTable()"></select>
+      </div>
+      <div>
+        <label for="difficulty-filter">Difficulty:</label>
+        <select id="difficulty-filter" onchange="renderTable()"></select>
+      </div>
+    </div>
     <table>
       <thead>
         <tr><th>Topic</th><th>Question</th><th>Difficulty</th></tr>
@@ -81,10 +95,23 @@
     return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
   }
 
+  function renderFilters() {
+    const topicSet = new Set(data.map(d => d.topic));
+    const diffSet = new Set(data.map(d => d.difficulty));
+    const topicSelect = document.getElementById('topic-filter');
+    const diffSelect = document.getElementById('difficulty-filter');
+
+    topicSelect.innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
+    diffSelect.innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+  }
+
   function renderTable() {
     const tbody = document.getElementById('question-table-body');
+    const topicVal = document.getElementById('topic-filter').value;
+    const diffVal = document.getElementById('difficulty-filter').value;
     tbody.innerHTML = '';
     data.forEach((item, idx) => {
+      if ((topicVal && item.topic !== topicVal) || (diffVal && item.difficulty !== diffVal)) return;
       const tr = document.createElement('tr');
       tr.innerHTML = `<td>${item.topic}</td><td>${item["question header"]}</td><td>${item.difficulty}</td>`;
       tr.onclick = () => showDetail(idx);
@@ -122,6 +149,7 @@
     .then(res => res.text())
     .then(text => {
       data.push(...parseCSV(text));
+      renderFilters();
       renderTable();
     });
 </script>
