@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Flexible Question Viewer</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     body { font-family: Arial; margin: 0; }
@@ -43,14 +47,15 @@
       border: 1px solid #ccc;
       overflow: hidden;
     }
-    .resizable-grid .pane {
+    .pane-wrapper {
+      position: relative;
       flex-grow: 1;
-      padding: 1em;
-      overflow-y: auto;
       border-right: 1px solid #ccc;
     }
-    .resizable-grid .pane:last-child {
-      border-right: none;
+    .pane {
+      padding: 1em;
+      overflow-y: auto;
+      height: 100%;
     }
     .resizer {
       width: 5px;
@@ -58,7 +63,26 @@
       background-color: #ccc;
     }
     .hidden { display: none !important; }
-    pre { white-space: pre-wrap; word-wrap: break-word; font-family: Consolas, monospace; }
+    .copy-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      padding: 0.3em 0.6em;
+      font-size: 0.9em;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .pane code {
+      background: #2d2d2d;
+      color: #ccc;
+      display: block;
+      padding: 1em;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
   </style>
 </head>
 <body>
@@ -98,11 +122,22 @@
     </div>
 
     <div class="resizable-grid" id="resizable-grid">
-      <div class="pane" id="pane-question"></div>
+      <div class="pane-wrapper" id="wrapper-question">
+        <button class="copy-btn" onclick="copyToClipboard('pane-question')">Copy</button>
+        <div class="pane" id="pane-question"></div>
+      </div>
       <div class="resizer hidden" id="resizer1"></div>
-      <div class="pane hidden" id="pane-code"></div>
+
+      <div class="pane-wrapper hidden" id="wrapper-code">
+        <button class="copy-btn" onclick="copyToClipboard('pane-code')">Copy</button>
+        <pre class="pane"><code id="pane-code" class="language-javascript"></code></pre>
+      </div>
       <div class="resizer hidden" id="resizer2"></div>
-      <div class="pane hidden" id="pane-explanation"></div>
+
+      <div class="pane-wrapper hidden" id="wrapper-explanation">
+        <button class="copy-btn" onclick="copyToClipboard('pane-explanation')">Copy</button>
+        <div class="pane" id="pane-explanation"></div>
+      </div>
     </div>
   </div>
 </main>
@@ -125,20 +160,11 @@
     return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
   }
 
-  function escapeHTML(str) {
-    return str.replace(/[&<>"']/g, tag => (
-      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
-    ));
-  }
-
   function renderFilters() {
     const topicSet = new Set(data.map(d => d.topic));
     const diffSet = new Set(data.map(d => d.difficulty));
-    const topicSelect = document.getElementById('topic-filter');
-    const diffSelect = document.getElementById('difficulty-filter');
-
-    topicSelect.innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
-    diffSelect.innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+    document.getElementById('topic-filter').innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
+    document.getElementById('difficulty-filter').innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
   }
 
   function renderTable() {
@@ -160,22 +186,21 @@
     document.getElementById('question-title').textContent = item["question header"];
     document.getElementById('external-link').href = item["problem link"];
 
-    fetchText(item.question).then(t => {
-      document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`;
-    });
+    fetchText(item.question).then(t => document.getElementById('pane-question').textContent = t);
     fetchText(item.code).then(t => {
-      document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`;
+      const codeEl = document.getElementById('pane-code');
+      codeEl.textContent = t;
+      codeEl.className = `language-${item["code language"].toLowerCase()}`;
+      Prism.highlightElement(codeEl);
     });
-    fetchText(item.explanation).then(t => {
-      document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`;
-    });
+    fetchText(item.explanation).then(t => document.getElementById('pane-explanation').textContent = t);
 
     document.querySelector("input[onchange*=question]").checked = true;
     document.querySelector("input[onchange*=code]").checked = false;
     document.querySelector("input[onchange*=explanation]").checked = false;
-    document.getElementById('pane-question').classList.remove('hidden');
-    document.getElementById('pane-code').classList.add('hidden');
-    document.getElementById('pane-explanation').classList.add('hidden');
+    document.getElementById('wrapper-question').classList.remove('hidden');
+    document.getElementById('wrapper-code').classList.add('hidden');
+    document.getElementById('wrapper-explanation').classList.add('hidden');
     document.getElementById('resizer1').classList.add('hidden');
     document.getElementById('resizer2').classList.add('hidden');
 
@@ -189,11 +214,11 @@
   }
 
   function togglePane(type) {
-    const pane = document.getElementById(`pane-${type}`);
+    const wrapper = document.getElementById(`wrapper-${type}`);
     const resizer = document.getElementById(`resizer${type === 'question' ? 1 : type === 'code' ? 2 : ''}`);
     const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
     const show = checkbox.checked;
-    pane.classList.toggle('hidden', !show);
+    wrapper.classList.toggle('hidden', !show);
     if (resizer) resizer.classList.toggle('hidden', !show);
   }
 
@@ -220,6 +245,11 @@
     });
   }
 
+  function copyToClipboard(paneId) {
+    const text = document.getElementById(paneId).textContent;
+    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+  }
+
   fetch('data/questions.csv')
     .then(res => res.text())
     .then(text => {
@@ -229,8 +259,8 @@
     });
 
   window.onload = () => {
-    initResize(document.getElementById('resizer1'), document.getElementById('pane-question'), document.getElementById('pane-code'));
-    initResize(document.getElementById('resizer2'), document.getElementById('pane-code'), document.getElementById('pane-explanation'));
+    initResize(document.getElementById('resizer1'), document.getElementById('wrapper-question'), document.getElementById('wrapper-code'));
+    initResize(document.getElementById('resizer2'), document.getElementById('wrapper-code'), document.getElementById('wrapper-explanation'));
   }
 </script>
 </body>
