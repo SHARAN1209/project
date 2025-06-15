@@ -137,19 +137,20 @@
       transform: translateY(0);
     }
 
-    .back-btn {
-      position: fixed;
-      top: 1.5em;
-      left: 1.5em;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.6em 1.2em;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 10;
-    }
+   .back-btn {
+    margin-bottom: 1em;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.6em 1.2em;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .back-btn:hover {
+    background: #4f46e5;
+  }
 
     .question-header-bar {
       display: flex;
@@ -283,12 +284,13 @@
     </div>
 
     <div id="detail-page" class="page">
-      <button class="back-btn" onclick="goBack()">← Back</button>
       <div class="question-header-bar">
         <span id="question-title"></span>
         <a id="external-link" href="#" target="_blank">🔗</a>
       </div>
-
+      
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      
       <div class="layout-toggle">
         <label><input type="checkbox" onchange="togglePane('question')" checked> Question</label>
         <label><input type="checkbox" onchange="togglePane('code')"> Code</label>
