@@ -17,12 +17,14 @@
       padding: 0.5em 1em; background: #007bff; color: white;
       border: none; cursor: pointer; z-index: 1001; border-radius: 4px;
     }
-    .tab-controls { margin-bottom: 1em; display: flex; gap: 1em; }
-    .tab-controls button {
+    .tab-controls, .layout-controls {
+      margin-bottom: 1em; display: flex; gap: 1em; flex-wrap: wrap;
+    }
+    .tab-controls button, .layout-controls button {
       padding: 0.5em 1em; border: none; cursor: pointer;
       background: #eee; border-radius: 4px;
     }
-    .tab-controls button.active { background: #007bff; color: white; }
+    .tab-controls button.active, .layout-controls button.active { background: #007bff; color: white; }
     .content-section { display: none; background: #f4f4f4; padding: 1em; border: 1px solid #ccc; white-space: pre-wrap; overflow-y: auto; }
     .content-section.active { display: block; }
     .question-header-bar {
@@ -35,6 +37,15 @@
       display: flex; gap: 1em; margin-top: 1em;
     }
     .filters label { font-weight: bold; margin-right: 0.5em; }
+    .grid-layout {
+      display: flex;
+      gap: 1em;
+    }
+    .grid-layout .content-section {
+      flex: 1;
+      display: block;
+      height: 500px;
+    }
   </style>
 </head>
 <body>
@@ -70,9 +81,21 @@
       <button onclick="showTab('code')">Code</button>
       <button onclick="showTab('explanation')">Explanation</button>
     </div>
-    <div id="question" class="content-section active"></div>
-    <div id="code" class="content-section"></div>
-    <div id="explanation" class="content-section"></div>
+    <div class="layout-controls">
+      <label>Layout:</label>
+      <button onclick="setLayout('tab')" class="active">Tab View</button>
+      <button onclick="setLayout('grid')">Grid View</button>
+    </div>
+    <div id="tab-view">
+      <div id="question" class="content-section active"></div>
+      <div id="code" class="content-section"></div>
+      <div id="explanation" class="content-section"></div>
+    </div>
+    <div id="grid-view" class="grid-layout" style="display:none;">
+      <div id="grid-question" class="content-section"></div>
+      <div id="grid-code" class="content-section"></div>
+      <div id="grid-explanation" class="content-section"></div>
+    </div>
   </div>
 </main>
 <script>
@@ -124,11 +147,21 @@
     document.getElementById('question-title').textContent = currentItem["question header"];
     document.getElementById('external-link').href = currentItem["problem link"];
 
-    fetchText(currentItem.question).then(t => document.getElementById('question').textContent = t);
-    fetchText(currentItem.code).then(t => document.getElementById('code').textContent = `// Language: ${currentItem["code language"]}\n` + t);
-    fetchText(currentItem.explanation).then(t => document.getElementById('explanation').textContent = t);
+    fetchText(currentItem.question).then(t => {
+      document.getElementById('question').textContent = t;
+      document.getElementById('grid-question').textContent = t;
+    });
+    fetchText(currentItem.code).then(t => {
+      const codeText = `// Language: ${currentItem["code language"]}\n` + t;
+      document.getElementById('code').textContent = codeText;
+      document.getElementById('grid-code').textContent = codeText;
+    });
+    fetchText(currentItem.explanation).then(t => {
+      document.getElementById('explanation').textContent = t;
+      document.getElementById('grid-explanation').textContent = t;
+    });
 
-    showTab('question');
+    setLayout('tab');
     document.getElementById('list-page').classList.remove('active');
     document.getElementById('detail-page').classList.add('active');
   }
@@ -139,10 +172,22 @@
   }
 
   function showTab(tab) {
-    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('#tab-view .content-section').forEach(s => s.classList.remove('active'));
     document.getElementById(tab).classList.add('active');
     document.querySelectorAll('.tab-controls button').forEach(b => b.classList.remove('active'));
     document.querySelector(`.tab-controls button[onclick*="${tab}"]`).classList.add('active');
+  }
+
+  function setLayout(mode) {
+    if (mode === 'grid') {
+      document.getElementById('tab-view').style.display = 'none';
+      document.getElementById('grid-view').style.display = 'flex';
+    } else {
+      document.getElementById('tab-view').style.display = 'block';
+      document.getElementById('grid-view').style.display = 'none';
+    }
+    document.querySelectorAll('.layout-controls button').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.layout-controls button[onclick*="${mode}"]`).classList.add('active');
   }
 
   fetch('data/questions.csv')
