@@ -75,10 +75,14 @@
         <label for="difficulty-filter">Difficulty:</label>
         <select id="difficulty-filter" onchange="renderTable()"></select>
       </div>
+      <div>
+        <label for="list-filter">List:</label>
+        <select id="list-filter" onchange="renderTable()"></select>
+      </div>
     </div>
     <table>
       <thead>
-        <tr><th>Topic</th><th>Question</th><th>Difficulty</th></tr>
+        <tr><th>Topic</th><th>Question</th><th>Difficulty</th><th>List</th></tr>
       </thead>
       <tbody id="question-table-body"></tbody>
     </table>
@@ -134,22 +138,38 @@
   function renderFilters() {
     const topicSet = new Set(data.map(d => d.topic));
     const diffSet = new Set(data.map(d => d.difficulty));
+    const listSet = new Set();
+
+    data.forEach(d => {
+      (d.list || '').split(',').map(s => s.trim()).forEach(tag => {
+        if (tag) listSet.add(tag);
+      });
+    });
+
     const topicSelect = document.getElementById('topic-filter');
     const diffSelect = document.getElementById('difficulty-filter');
+    const listSelect = document.getElementById('list-filter');
 
     topicSelect.innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
     diffSelect.innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+    listSelect.innerHTML = '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
   }
 
   function renderTable() {
     const tbody = document.getElementById('question-table-body');
     const topicVal = document.getElementById('topic-filter').value;
     const diffVal = document.getElementById('difficulty-filter').value;
+    const listVal = document.getElementById('list-filter').value;
     tbody.innerHTML = '';
     data.forEach((item, idx) => {
-      if ((topicVal && item.topic !== topicVal) || (diffVal && item.difficulty !== diffVal)) return;
+      const lists = (item.list || '').split(',').map(s => s.trim());
+      if (
+        (topicVal && item.topic !== topicVal) ||
+        (diffVal && item.difficulty !== diffVal) ||
+        (listVal && !lists.includes(listVal))
+      ) return;
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${item.topic}</td><td>${item["question header"]}</td><td>${item.difficulty}</td>`;
+      tr.innerHTML = `<td>${item.topic}</td><td>${item["question header"]}</td><td>${item.difficulty}</td><td>${item.list || ''}</td>`;
       tr.onclick = () => showDetail(idx);
       tbody.appendChild(tr);
     });
