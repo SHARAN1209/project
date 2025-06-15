@@ -92,16 +92,16 @@
 
     <div class="layout-toggle">
       <label><input type="checkbox" onchange="togglePane('question')" checked> Question</label>
-      <label><input type="checkbox" onchange="togglePane('code')" checked> Code</label>
-      <label><input type="checkbox" onchange="togglePane('explanation')" checked> Explanation</label>
+      <label><input type="checkbox" onchange="togglePane('code')"> Code</label>
+      <label><input type="checkbox" onchange="togglePane('explanation')"> Explanation</label>
     </div>
 
     <div class="resizable-grid" id="resizable-grid">
       <div class="pane" id="pane-question"></div>
-      <div class="resizer" id="resizer1"></div>
-      <div class="pane" id="pane-code"></div>
-      <div class="resizer" id="resizer2"></div>
-      <div class="pane" id="pane-explanation"></div>
+      <div class="resizer hidden" id="resizer1"></div>
+      <div class="pane hidden" id="pane-code"></div>
+      <div class="resizer hidden" id="resizer2"></div>
+      <div class="pane hidden" id="pane-explanation"></div>
     </div>
   </div>
 </main>
@@ -157,6 +157,16 @@
     fetchText(item.code).then(t => document.getElementById('pane-code').textContent = `// Language: ${item["code language"]}\n` + t);
     fetchText(item.explanation).then(t => document.getElementById('pane-explanation').textContent = t);
 
+    // Reset view to show only question
+    document.querySelector("input[onchange*=question]").checked = true;
+    document.querySelector("input[onchange*=code]").checked = false;
+    document.querySelector("input[onchange*=explanation]").checked = false;
+    document.getElementById('pane-question').classList.remove('hidden');
+    document.getElementById('pane-code').classList.add('hidden');
+    document.getElementById('pane-explanation').classList.add('hidden');
+    document.getElementById('resizer1').classList.add('hidden');
+    document.getElementById('resizer2').classList.add('hidden');
+
     document.getElementById('list-page').classList.remove('active');
     document.getElementById('detail-page').classList.add('active');
   }
@@ -168,7 +178,7 @@
 
   function togglePane(type) {
     const pane = document.getElementById(`pane-${type}`);
-    const resizer = document.getElementById(`resizer${type === 'question' ? 1 : 2}`);
+    const resizer = document.getElementById(`resizer${type === 'question' ? 1 : type === 'code' ? 2 : ''}`);
     const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
     const show = checkbox.checked;
     pane.classList.toggle('hidden', !show);
