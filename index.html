@@ -127,7 +127,7 @@
 
       data.forEach(d => {
         if (d.lists) {
-          d.lists.split(';').map(s => s.trim()).forEach(tag => listSet.add(tag));
+          d.lists.split('|').map(s => s.trim()).forEach(tag => listSet.add(tag));
         }
       });
 
