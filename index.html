@@ -98,15 +98,12 @@
       color: #007bff;
     }
     .question-header-bar {
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: 0.5em;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 1em;
-      background: #f4f4f4;
-      border: 1px solid #ccc;
+      padding-bottom: 0.5em;
+      gap: 0.5em;
+      font-weight: bold;
+      font-size: 1.1em;
     }
     .question-header-bar a {
       text-decoration: none;
@@ -149,9 +146,11 @@
   <!-- Page 2 -->
   <div id="detail-page" class="page">
     <button class="back-btn" onclick="goBack()">← Back</button>
-    <div class="question-header-bar" id="question-header-bar"></div>
     <div class="qa-container">
-      <div class="qa-box" id="question-box">Loading...</div>
+      <div class="qa-box">
+        <div class="question-header-bar" id="question-header-bar"></div>
+        <div id="question-box">Loading...</div>
+      </div>
       <div class="qa-box" id="answer-box">Loading...</div>
     </div>
   </div>
@@ -198,7 +197,7 @@
       return;
     }
 
-    filtered.forEach((item, idx) => {
+    filtered.forEach((item) => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${item.topic}</td>
@@ -252,8 +251,8 @@
     answerBox.textContent = 'Loading...';
 
     questionHeaderBar.innerHTML = `
-      <span>${item["question header"]}</span>
       <a href="${item["problem link"]}" target="_blank" title="Open external problem">🔗</a>
+      <span>${item["question header"]}</span>
     `;
 
     fetchText(item.question).then(text => questionBox.textContent = text);
@@ -286,5 +285,6 @@
     }
   });
 </script>
+
 </body>
 </html>
