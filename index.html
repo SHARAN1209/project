@@ -4,344 +4,87 @@
   <meta charset="UTF-8" />
   <title>Flexible Question Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --bg-color: #f5f7fa;
-      --text-color: #111827;
-      --header-bg: #1f2937;
-      --header-color: #fff;
-      --primary: #6366f1;
-      --hover-bg: #eef2ff;
-      --border-color: #d1d5db;
-      --resizer-color: #9ca3af;
-
-      --bg-dark: #111827;
-      --text-dark: #f3f4f6;
-      --hover-dark: #1f2937;
-      --border-dark: #374151;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    body.dark-mode {
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
-    }
-
-    header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: #111827;
-      color: white;
-      padding: 0.6em 1em;
-      font-size: 1.2em;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 {
-      font-size: 1.4em;
-      margin: 0;
-    }
-
-    .dark-toggle {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.4em 1em;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .dark-toggle:hover {
-      background: #4f46e5;
-    }
-
-    main {
-      padding: 5em 1em 1em;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1em;
-      margin-bottom: 1.5em;
-    }
-
-    .filters > div {
-      flex: 1 1 10px;
-      min-width: 120px;
-    }
-
-    .filters label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 0.2em;
-    }
-
-    .filters select {
-      width: 100%;
-      padding: 0.5em;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      background: white;
-      color: var(--text-color);
-    }
-
-    body.dark-mode .filters select {
-      background: #1f2937;
-      color: var(--text-dark);
-      border: 1px solid var(--border-dark);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1em;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-      margin-bottom: 1em;
-    }
-
-    th, td {
-      padding: 1em;
-      border-bottom: 1px solid var(--border-color);
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    body.dark-mode table {
-      background: #1f2937;
-    }
-
-    body.dark-mode th, body.dark-mode td {
-      border-color: var(--border-dark);
-    }
-
-    tr:hover {
-      background-color: #f9f9f9;
-      cursor: pointer;
-    }
-
-    body.dark-mode tr:hover {
-      background-color: #2a2a2a;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .back-btn {
-      margin-bottom: 1em;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.6em 1.2em;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .back-btn:hover {
-      background: #4f46e5;
-    }
-
-    .question-header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 1.2em;
-      margin-bottom: 1em;
-      flex-wrap: wrap;
-      gap: 1em;
-    }
-
-    .question-header-bar a {
-      color: var(--primary);
-      font-size: 1.3em;
-      text-decoration: none;
-    }
-
-    .layout-toggle {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1em;
-      margin-bottom: 1em;
-    }
-
-    .layout-toggle label {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-    }
-
-    .resizable-grid {
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-      background: white;
-      flex-wrap: nowrap;
-    }
-
-    body.dark-mode .resizable-grid {
-      background: #1f2937;
-      border-color: var(--border-dark);
-    }
-
-    .resizable-grid .pane {
-      flex-grow: 1;
-      padding: 1em;
-      overflow-x: auto;
-      overflow-y: auto;
-      border-right: 1px solid var(--border-color);
-      min-width: 200px;
-    }
-
-    body.dark-mode .resizable-grid .pane {
-      border-color: var(--border-dark);
-    }
-
-    .resizable-grid .pane:last-child {
-      border-right: none;
-    }
-
-    .resizer {
-      width: 6px;
-      background-color: var(--resizer-color);
-      cursor: col-resize;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    pre {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.95em;
-      line-height: 1.5;
-    }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #9ca3af;
-      border-radius: 4px;
-    }
-
-    body.dark-mode ::-webkit-scrollbar-thumb {
-      background-color: #6b7280;
-    }
-
-    @media (max-width: 768px) {
-      .resizable-grid {
-        flex-direction: column;
-      }
-
-      .resizer {
-        height: 5px;
-        width: 100%;
-        cursor: row-resize;
-      }
-
-      th, td {
-        padding: 0.6em;
-      }
-
-      .filters {
-        flex-direction: column;
-      }
-    }
-  </style>
+  </script>
 </head>
-<body>
-  <header>
-    <h1>Flexible Question Viewer</h1>
-    <button class="dark-toggle" onclick="toggleDarkMode()">🌓</button>
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+  <!-- Header -->
+  <header class="fixed top-0 w-full bg-gray-800 text-white p-4 shadow z-50 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">Flexible Question Viewer</h1>
+    <button onclick="toggleDarkMode()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
+      🌓
+    </button>
   </header>
-  <main>
-    <div id="list-page" class="page active">
-      <h2>Questions</h2>
-      <div class="filters">
-        <div><label>Topic:</label><select id="topic-filter" onchange="renderTable()"></select></div>
-        <div><label>Difficulty:</label><select id="difficulty-filter" onchange="renderTable()"></select></div>
-        <div><label>List:</label><select id="list-filter" onchange="renderTable()"></select></div>
+
+  <!-- Main content -->
+  <main class="pt-20 px-4 max-w-7xl mx-auto">
+
+    <!-- List Page -->
+    <div id="list-page" class="block">
+      <h2 class="text-2xl font-semibold mb-4">Questions</h2>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-4 mb-6">
+        <div class="flex flex-col">
+          <label class="font-medium mb-1">Topic</label>
+          <select id="topic-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:border-gray-700"></select>
+        </div>
+        <div class="flex flex-col">
+          <label class="font-medium mb-1">Difficulty</label>
+          <select id="difficulty-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:border-gray-700"></select>
+        </div>
+        <div class="flex flex-col">
+          <label class="font-medium mb-1">List</label>
+          <select id="list-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:border-gray-700"></select>
+        </div>
       </div>
-      <div class="table-wrapper">
-        <table>
-          <thead>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded shadow bg-white dark:bg-gray-800">
+        <table class="min-w-full text-sm text-left table-auto">
+          <thead class="bg-gray-100 dark:bg-gray-700">
             <tr>
-              <th>Topic</th>
-              <th>Question</th>
-              <th>Difficulty</th>
-              <th>List</th>
+              <th class="px-4 py-2">Topic</th>
+              <th class="px-4 py-2">Question</th>
+              <th class="px-4 py-2">Difficulty</th>
+              <th class="px-4 py-2">List</th>
             </tr>
           </thead>
-          <tbody id="question-table-body"></tbody>
+          <tbody id="question-table-body" class="divide-y dark:divide-gray-700"></tbody>
         </table>
       </div>
     </div>
 
-    <div id="detail-page" class="page">
-      <button class="back-btn" onclick="goBack()">← Back</button>
-      <div class="question-header-bar">
-        <span id="question-title"></span>
-        <a id="external-link" href="#" target="_blank">🔗</a>
+    <!-- Detail Page -->
+    <div id="detail-page" class="hidden">
+      <button onclick="goBack()" class="mt-4 mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
+        ← Back
+      </button>
+
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+        <h3 id="question-title" class="text-xl font-semibold"></h3>
+        <a id="external-link" href="#" target="_blank" class="text-indigo-500 hover:underline">🔗 View Problem</a>
       </div>
 
-      <div class="layout-toggle">
-        <label><input type="checkbox" onchange="togglePane('question')" checked> Question</label>
-        <label><input type="checkbox" onchange="togglePane('code')"> Code</label>
-        <label><input type="checkbox" onchange="togglePane('explanation')"> Explanation</label>
+      <!-- Toggle Layout -->
+      <div class="flex flex-wrap gap-4 mb-4">
+        <label><input type="checkbox" onchange="togglePane('question')" checked class="mr-1"> Question</label>
+        <label><input type="checkbox" onchange="togglePane('code')" class="mr-1"> Code</label>
+        <label><input type="checkbox" onchange="togglePane('explanation')" class="mr-1"> Explanation</label>
       </div>
 
-      <div class="resizable-grid" id="resizable-grid">
-        <div class="pane" id="pane-question"></div>
-        <div class="resizer hidden" id="resizer1"></div>
-        <div class="pane hidden" id="pane-code"></div>
-        <div class="resizer hidden" id="resizer2"></div>
-        <div class="pane hidden" id="pane-explanation"></div>
+      <!-- Resizable Grid -->
+      <div id="resizable-grid" class="flex flex-col sm:flex-row gap-4">
+        <div id="pane-question" class="flex-1 p-4 bg-white dark:bg-gray-800 rounded overflow-auto whitespace-pre-wrap font-mono text-sm"></div>
+        <div id="pane-code" class="hidden flex-1 p-4 bg-white dark:bg-gray-800 rounded overflow-auto whitespace-pre-wrap font-mono text-sm"></div>
+        <div id="pane-explanation" class="hidden flex-1 p-4 bg-white dark:bg-gray-800 rounded overflow-auto whitespace-pre-wrap font-mono text-sm"></div>
       </div>
     </div>
+
   </main>
 
   <script>
@@ -402,11 +145,12 @@
             (listVal && !listTags.includes(listVal))) return;
 
         const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer';
         tr.innerHTML = `
-          <td>${item.topic}</td>
-          <td>${item["question header"]}</td>
-          <td>${item.difficulty}</td>
-          <td>${item.lists || ''}</td>
+          <td class="px-4 py-2">${item.topic}</td>
+          <td class="px-4 py-2">${item["question header"]}</td>
+          <td class="px-4 py-2">${item.difficulty}</td>
+          <td class="px-4 py-2">${item.lists || ''}</td>
         `;
         tr.onclick = () => showDetail(idx);
         tbody.appendChild(tr);
@@ -419,64 +163,38 @@
       document.getElementById('external-link').href = item["problem link"];
 
       fetchText(item.question).then(t =>
-        document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
+        document.getElementById('pane-question').innerHTML = escapeHTML(t));
       fetchText(item.code).then(t =>
-        document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`);
+        document.getElementById('pane-code').innerHTML = `// Language: ${item["code language"]}\n${escapeHTML(t)}`);
       fetchText(item.explanation).then(t =>
-        document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
+        document.getElementById('pane-explanation').innerHTML = escapeHTML(t));
 
-      ["question", "code", "explanation"].forEach(type => {
-        document.querySelector(`input[onchange*="${type}"]`).checked = (type === "question");
-        document.getElementById(`pane-${type}`).classList.toggle("hidden", type !== "question");
+      ['question', 'code', 'explanation'].forEach(type => {
+        const pane = document.getElementById(`pane-${type}`);
+        const checkbox = document.querySelector(`input[onchange*="${type}"]`);
+        const show = type === 'question';  // show question pane by default
+        checkbox.checked = show;
+        pane.classList.toggle('hidden', !show);
       });
 
-      document.getElementById('resizer1').classList.add('hidden');
-      document.getElementById('resizer2').classList.add('hidden');
-
-      document.getElementById('list-page').classList.remove('active');
-      document.getElementById('detail-page').classList.add('active');
+      document.getElementById('list-page').classList.add('hidden');
+      document.getElementById('detail-page').classList.remove('hidden');
     }
 
     function goBack() {
-      document.getElementById('detail-page').classList.remove('active');
-      document.getElementById('list-page').classList.add('active');
+      document.getElementById('detail-page').classList.add('hidden');
+      document.getElementById('list-page').classList.remove('hidden');
     }
 
     function togglePane(type) {
       const pane = document.getElementById(`pane-${type}`);
-      const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
-      const resizer = document.getElementById(`resizer${type === 'question' ? 1 : type === 'code' ? 2 : ''}`);
-      const show = checkbox.checked;
-      pane.classList.toggle('hidden', !show);
-      if (resizer) resizer.classList.toggle('hidden', !show);
-    }
-
-    function initResize(resizer, leftPane, rightPane) {
-      let startX;
-      resizer.addEventListener('mousedown', function(e) {
-        startX = e.clientX;
-        const leftWidth = leftPane.getBoundingClientRect().width;
-        const rightWidth = rightPane.getBoundingClientRect().width;
-
-        function onMouseMove(e) {
-          const dx = e.clientX - startX;
-          leftPane.style.flex = `0 0 ${leftWidth + dx}px`;
-          rightPane.style.flex = `0 0 ${rightWidth - dx}px`;
-        }
-
-        function onMouseUp() {
-          document.removeEventListener('mousemove', onMouseMove);
-          document.removeEventListener('mouseup', onMouseUp);
-        }
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      });
+      const checkbox = document.querySelector(`input[onchange*="${type}"]`);
+      pane.classList.toggle('hidden', !checkbox.checked);
     }
 
     function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+      document.body.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark'));
     }
 
     fetch('data/questions.csv')
@@ -489,10 +207,8 @@
 
     window.onload = () => {
       if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
+        document.body.classList.add('dark');
       }
-      initResize(document.getElementById('resizer1'), document.getElementById('pane-question'), document.getElementById('pane-code'));
-      initResize(document.getElementById('resizer2'), document.getElementById('pane-code'), document.getElementById('pane-explanation'));
     };
   </script>
 </body>
