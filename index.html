@@ -52,17 +52,13 @@
     .resizable-grid .pane:last-child {
       border-right: none;
     }
-    .resizable-grid .code-pane {
-      background-color: #f8f8f8;
-      font-family: monospace;
-      white-space: pre-wrap;
-    }
     .resizer {
       width: 5px;
       cursor: col-resize;
       background-color: #ccc;
     }
     .hidden { display: none !important; }
+    pre { white-space: pre-wrap; word-wrap: break-word; font-family: Consolas, monospace; }
   </style>
 </head>
 <body>
@@ -104,7 +100,7 @@
     <div class="resizable-grid" id="resizable-grid">
       <div class="pane" id="pane-question"></div>
       <div class="resizer hidden" id="resizer1"></div>
-      <div class="pane code-pane hidden" id="pane-code"></div>
+      <div class="pane hidden" id="pane-code"></div>
       <div class="resizer hidden" id="resizer2"></div>
       <div class="pane hidden" id="pane-explanation"></div>
     </div>
@@ -127,6 +123,12 @@
 
   function fetchText(url) {
     return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, tag => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
+    ));
   }
 
   function renderFilters() {
@@ -158,9 +160,15 @@
     document.getElementById('question-title').textContent = item["question header"];
     document.getElementById('external-link').href = item["problem link"];
 
-    fetchText(item.question).then(t => document.getElementById('pane-question').textContent = t);
-    fetchText(item.code).then(t => document.getElementById('pane-code').textContent = `// Language: ${item["code language"]}\n` + t);
-    fetchText(item.explanation).then(t => document.getElementById('pane-explanation').textContent = t);
+    fetchText(item.question).then(t => {
+      document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`;
+    });
+    fetchText(item.code).then(t => {
+      document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`;
+    });
+    fetchText(item.explanation).then(t => {
+      document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`;
+    });
 
     document.querySelector("input[onchange*=question]").checked = true;
     document.querySelector("input[onchange*=code]").checked = false;
