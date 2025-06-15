@@ -1,63 +1,213 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Flexible Question Viewer</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial; margin: 0; }
-    header { background: #333; color: white; padding: 1em; text-align: center; }
-    main { padding: 1em; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
-    th, td { border: 1px solid #ccc; padding: 0.8em; text-align: left; }
-    tr:hover { background: #f9f9f9; cursor: pointer; }
-    .page { display: none; }
-    .active { display: block; }
-    .back-btn {
-      position: fixed; top: 1em; left: 1em;
-      padding: 0.5em 1em; background: #007bff; color: white;
-      border: none; cursor: pointer; z-index: 1001; border-radius: 4px;
+    :root {
+      --bg-color: #f5f7fa;
+      --header-bg: #1f2937;
+      --header-color: #fff;
+      --primary: #6366f1;
+      --hover-bg: #eef2ff;
+      --text-color: #111827;
+      --border-color: #d1d5db;
+      --resizer-color: #9ca3af;
     }
-    .question-header-bar {
-      display: flex; align-items: center;
-      justify-content: space-between; font-weight: bold;
-      font-size: 1.1em; margin-bottom: 1em;
+
+    * {
+      box-sizing: border-box;
     }
-    .question-header-bar a { text-decoration: none; color: #007bff; margin-left: 1em; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    header {
+      background: var(--header-bg);
+      color: var(--header-color);
+      padding: 1.2em;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.6em;
+    }
+
+    main {
+      padding: 2em;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h2 {
+      margin-bottom: 1em;
+      font-size: 1.4em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 1em;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    tr:hover {
+      background: var(--hover-bg);
+      cursor: pointer;
+    }
+
     .filters {
-      display: flex; gap: 1em; margin-top: 1em;
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      margin-bottom: 1.5em;
     }
-    .filters label { font-weight: bold; margin-right: 0.5em; }
+
+    .filters label {
+      font-weight: 600;
+      margin-right: 0.4em;
+    }
+
+    .filters select {
+      padding: 0.5em;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 1.5em;
+      left: 1.5em;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6em 1.2em;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 10;
+      transition: background 0.3s;
+    }
+
+    .back-btn:hover {
+      background: #4f46e5;
+    }
+
+    .question-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+
+    .question-header-bar a {
+      color: var(--primary);
+      font-size: 1.3em;
+      text-decoration: none;
+    }
 
     .layout-toggle {
-      display: flex; gap: 0.5em; margin-bottom: 1em;
+      display: flex;
+      gap: 1.5em;
+      align-items: center;
+      margin-bottom: 1em;
+    }
+
+    .layout-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-weight: 500;
+    }
+
+    .layout-toggle input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
     }
 
     .resizable-grid {
       display: flex;
       width: 100%;
       height: 600px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       overflow: hidden;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
+
     .resizable-grid .pane {
       flex-grow: 1;
-      padding: 1em;
+      padding: 1.2em;
       overflow-y: auto;
-      border-right: 1px solid #ccc;
+      border-right: 1px solid var(--border-color);
     }
+
     .resizable-grid .pane:last-child {
       border-right: none;
     }
+
     .resizer {
-      width: 5px;
+      width: 6px;
+      background-color: var(--resizer-color);
       cursor: col-resize;
-      background-color: #ccc;
+      transition: background 0.3s;
     }
-    .hidden { display: none !important; }
-    pre { white-space: pre-wrap; word-wrap: break-word; font-family: Consolas, monospace; }
+
+    .resizer:hover {
+      background-color: #6b7280;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
+
+    /* Responsive for smaller screens */
+    @media (max-width: 768px) {
+      .resizable-grid {
+        flex-direction: column;
+        height: auto;
+      }
+      .resizer {
+        height: 5px;
+        width: 100%;
+        cursor: row-resize;
+      }
+    }
   </style>
 </head>
+
 <body>
 <header><h1>Flexible Question Viewer</h1></header>
 <main>
