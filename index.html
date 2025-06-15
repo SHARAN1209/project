@@ -1,479 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <h1>Flexible Question Viewer</h1>
-  <button class="dark-toggle" onclick="toggleDarkMode()">🌓</button>
+  <meta charset="UTF-8" />
+  <title>Flexible Question Viewer</title>
   <style>
-  :root {
-    --bg-color: #f5f7fa;
-    --text-color: #111827;
-    --header-bg: #1f2937;
-    --header-color: #fff;
-    --primary: #6366f1;
-    --hover-bg: #eef2ff;
-    --border-color: #d1d5db;
-    --resizer-color: #9ca3af;
+    :root {
+      --bg-color: #f5f7fa;
+      --text-color: #111827;
+      --header-bg: #1f2937;
+      --header-color: #fff;
+      --primary: #6366f1;
+      --hover-bg: #eef2ff;
+      --border-color: #d1d5db;
+      --resizer-color: #9ca3af;
 
-    --bg-dark: #111827;
-    --text-dark: #f3f4f6;
-    --hover-dark: #1f2937;
-    --border-dark: #374151;
-  }
-
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-
-  body.dark-mode {
-    background-color: var(--bg-dark);
-    color: var(--text-dark);
-  }
-
-  header {
-    background-color: var(--header-bg);
-    color: var(--header-color);
-    padding: 1.2em;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    position: relative;
-  }
-
-  .dark-toggle {
-    position: absolute;
-    right: 1em;
-    top: 1em;
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 0.4em 1em;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .dark-toggle:hover {
-    background: #4f46e5;
-  }
-
-  main {
-    padding: 2em;
-    max-width: 1200px;
-    margin: auto;
-    transition: opacity 0.4s ease;
-  }
-
-  h1, h2 {
-    margin: 0 0 1em;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1em;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    transition: background 0.3s;
-  }
-
-  body.dark-mode table {
-    background: #1f2937;
-  }
-
-  th, td {
-    padding: 1em;
-    border-bottom: 1px solid var(--border-color);
-    text-align: left;
-  }
-
-  body.dark-mode th, body.dark-mode td {
-    border-color: var(--border-dark);
-  }
-
-  tr:hover {
-    background: var(--hover-bg);
-  }
-
-  body.dark-mode tr:hover {
-    background: var(--hover-dark);
-  }
-
-  .filters {
-    display: flex;
-    gap: 1em;
-    flex-wrap: wrap;
-    margin-bottom: 1.5em;
-  }
-
-  .filters label {
-    font-weight: 600;
-  }
-
-  .filters select {
-    padding: 0.5em;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    background: white;
-    color: var(--text-color);
-  }
-
-  body.dark-mode .filters select {
-    background: #1f2937;
-    color: var(--text-dark);
-    border: 1px solid var(--border-dark);
-  }
-
-  .page {
-    display: none;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-  }
-
-  .page.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .back-btn {
-    position: fixed;
-    top: 1.5em;
-    left: 1.5em;
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 0.6em 1.2em;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 10;
-  }
-
-  .question-header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1.2em;
-    margin-bottom: 1em;
-  }
-
-  .question-header-bar a {
-    color: var(--primary);
-    font-size: 1.3em;
-    text-decoration: none;
-  }
-
-  .layout-toggle {
-    display: flex;
-    gap: 1.5em;
-    margin-bottom: 1em;
-  }
-
-  .layout-toggle label {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-  }
-
-  .resizable-grid {
-    display: flex;
-    width: 100%;
-    height: 600px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    background: white;
-  }
-
-  body.dark-mode .resizable-grid {
-    background: #1f2937;
-    border-color: var(--border-dark);
-  }
-
-  .resizable-grid .pane {
-    flex-grow: 1;
-    padding: 1.2em;
-    overflow-y: auto;
-    border-right: 1px solid var(--border-color);
-  }
-
-  body.dark-mode .resizable-grid .pane {
-    border-color: var(--border-dark);
-  }
-
-  .resizable-grid .pane:last-child {
-    border-right: none;
-  }
-
-  .resizer {
-    width: 6px;
-    background-color: var(--resizer-color);
-    cursor: col-resize;
-  }
-
-  .hidden {
-    display: none !important;
-  }
-
-  pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: 'Fira Code', monospace;
-    font-size: 0.95em;
-    line-height: 1.5;
-  }
-
-  /* 🎛️ Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: #9ca3af;
-    border-radius: 4px;
-  }
-
-  body.dark-mode ::-webkit-scrollbar-thumb {
-    background-color: #6b7280;
-  }
-
-  @media (max-width: 768px) {
-    .resizable-grid {
-      flex-direction: column;
-      height: auto;
+      --bg-dark: #111827;
+      --text-dark: #f3f4f6;
+      --hover-dark: #1f2937;
+      --border-dark: #374151;
     }
-    .resizer {
-      height: 5px;
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: var(--header-color);
+      padding: 1.2em;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .dark-toggle {
+      position: absolute;
+      right: 1em;
+      top: 1em;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.4em 1em;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .dark-toggle:hover {
+      background: #4f46e5;
+    }
+
+    main {
+      padding: 2em;
+      max-width: 1200px;
+      margin: auto;
+      transition: opacity 0.4s ease;
+    }
+
+    table {
       width: 100%;
-      cursor: row-resize;
+      border-collapse: collapse;
+      margin-top: 1em;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      transition: background 0.3s;
     }
-  }
-</style>
 
-   
+    body.dark-mode table {
+      background: #1f2937;
+    }
+
+    th, td {
+      padding: 1em;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    body.dark-mode th, body.dark-mode td {
+      border-color: var(--border-dark);
+    }
+
+    tr:hover {
+      background: var(--hover-bg);
+    }
+
+    body.dark-mode tr:hover {
+      background: var(--hover-dark);
+    }
+
+    .filters {
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      margin-bottom: 1.5em;
+    }
+
+    .filters label {
+      font-weight: 600;
+    }
+
+    .filters select {
+      padding: 0.5em;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: white;
+      color: var(--text-color);
+    }
+
+    body.dark-mode .filters select {
+      background: #1f2937;
+      color: var(--text-dark);
+      border: 1px solid var(--border-dark);
+    }
+
+    .page {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 1.5em;
+      left: 1.5em;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6em 1.2em;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .question-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+
+    .question-header-bar a {
+      color: var(--primary);
+      font-size: 1.3em;
+      text-decoration: none;
+    }
+
+    .layout-toggle {
+      display: flex;
+      gap: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    .layout-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    .resizable-grid {
+      display: flex;
+      width: 100%;
+      height: 600px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+
+    body.dark-mode .resizable-grid {
+      background: #1f2937;
+      border-color: var(--border-dark);
+    }
+
+    .resizable-grid .pane {
+      flex-grow: 1;
+      padding: 1.2em;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-color);
+    }
+
+    body.dark-mode .resizable-grid .pane {
+      border-color: var(--border-dark);
+    }
+
+    .resizable-grid .pane:last-child {
+      border-right: none;
+    }
+
+    .resizer {
+      width: 6px;
+      background-color: var(--resizer-color);
+      cursor: col-resize;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #9ca3af;
+      border-radius: 4px;
+    }
+
+    body.dark-mode ::-webkit-scrollbar-thumb {
+      background-color: #6b7280;
+    }
+
+    @media (max-width: 768px) {
+      .resizable-grid {
+        flex-direction: column;
+        height: auto;
+      }
+      .resizer {
+        height: 5px;
+        width: 100%;
+        cursor: row-resize;
+      }
+    }
+  </style>
 </head>
-
 <body>
-<header><h1>Flexible Question Viewer</h1></header>
-<main>
-  <div id="list-page" class="page active">
-    <h2>Questions</h2>
-    <div class="filters">
-      <div>
-        <label for="topic-filter">Topic:</label>
-        <select id="topic-filter" onchange="renderTable()"></select>
+  <header>
+    <h1>Flexible Question Viewer</h1>
+    <button class="dark-toggle" onclick="toggleDarkMode()">🌓</button>
+  </header>
+  <main>
+    <div id="list-page" class="page active">
+      <h2>Questions</h2>
+      <div class="filters">
+        <div><label>Topic:</label><select id="topic-filter" onchange="renderTable()"></select></div>
+        <div><label>Difficulty:</label><select id="difficulty-filter" onchange="renderTable()"></select></div>
+        <div><label>List:</label><select id="list-filter" onchange="renderTable()"></select></div>
       </div>
-      <div>
-        <label for="difficulty-filter">Difficulty:</label>
-        <select id="difficulty-filter" onchange="renderTable()"></select>
+      <table>
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Question</th>
+            <th>Difficulty</th>
+            <th>List</th>
+          </tr>
+        </thead>
+        <tbody id="question-table-body"></tbody>
+      </table>
+    </div>
+
+    <div id="detail-page" class="page">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div class="question-header-bar">
+        <span id="question-title"></span>
+        <a id="external-link" href="#" target="_blank">🔗</a>
       </div>
-      <div>
-        <label for="list-filter">List:</label>
-        <select id="list-filter" onchange="renderTable()"></select>
+
+      <div class="layout-toggle">
+        <label><input type="checkbox" onchange="togglePane('question')" checked> Question</label>
+        <label><input type="checkbox" onchange="togglePane('code')"> Code</label>
+        <label><input type="checkbox" onchange="togglePane('explanation')"> Explanation</label>
+      </div>
+
+      <div class="resizable-grid" id="resizable-grid">
+        <div class="pane" id="pane-question"></div>
+        <div class="resizer hidden" id="resizer1"></div>
+        <div class="pane hidden" id="pane-code"></div>
+        <div class="resizer hidden" id="resizer2"></div>
+        <div class="pane hidden" id="pane-explanation"></div>
       </div>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Topic</th>
-          <th>Question</th>
-          <th>Difficulty</th>
-          <th>List</th>
-        </tr>
-      </thead>
-      <tbody id="question-table-body"></tbody>
-    </table>
-  </div>
+  </main>
 
-  <div id="detail-page" class="page">
-    <button class="back-btn" onclick="goBack()">← Back</button>
-    <div class="question-header-bar">
-      <span id="question-title"></span>
-      <a id="external-link" href="#" target="_blank">🔗</a>
-    </div>
+  <script>
+    const data = [];
 
-    <div class="layout-toggle">
-      <label><input type="checkbox" onchange="togglePane('question')" checked> Question</label>
-      <label><input type="checkbox" onchange="togglePane('code')"> Code</label>
-      <label><input type="checkbox" onchange="togglePane('explanation')"> Explanation</label>
-    </div>
-
-    <div class="resizable-grid" id="resizable-grid">
-      <div class="pane" id="pane-question"></div>
-      <div class="resizer hidden" id="resizer1"></div>
-      <div class="pane hidden" id="pane-code"></div>
-      <div class="resizer hidden" id="resizer2"></div>
-      <div class="pane hidden" id="pane-explanation"></div>
-    </div>
-  </div>
-</main>
-
-<script>
-  const data = [];
-
-  function parseCSV(text) {
-    const [headerLine, ...lines] = text.trim().split('\n');
-    const headers = headerLine.split(',').map(h => h.trim());
-    return lines.map(line => {
-      const values = line.split(',').map(v => v.trim());
-      return headers.reduce((obj, header, i) => {
-        obj[header] = values[i] || '';
-        return obj;
-      }, {});
-    });
-  }
-
-  function fetchText(url) {
-    return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
-  }
-
-  function escapeHTML(str) {
-    return str.replace(/[&<>"']/g, tag => (
-      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
-    ));
-  }
-
-  function renderFilters() {
-    const topicSet = new Set(data.map(d => d.topic));
-    const diffSet = new Set(data.map(d => d.difficulty));
-    const listSet = new Set();
-
-    data.forEach(d => {
-      if (d.lists) {
-        d.lists.split(';').map(s => s.trim()).forEach(tag => listSet.add(tag));
-      }
-    });
-
-    document.getElementById('topic-filter').innerHTML =
-      '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
-    document.getElementById('difficulty-filter').innerHTML =
-      '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
-    document.getElementById('list-filter').innerHTML =
-      '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
-  }
-
-  function renderTable() {
-    const tbody = document.getElementById('question-table-body');
-    const topicVal = document.getElementById('topic-filter').value;
-    const diffVal = document.getElementById('difficulty-filter').value;
-    const listVal = document.getElementById('list-filter').value;
-
-    tbody.innerHTML = '';
-    data.forEach((item, idx) => {
-      const listTags = (item.lists || '').split(';').map(s => s.trim());
-
-      if ((topicVal && item.topic !== topicVal) ||
-          (diffVal && item.difficulty !== diffVal) ||
-          (listVal && !listTags.includes(listVal))) return;
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${item.topic}</td>
-        <td>${item["question header"]}</td>
-        <td>${item.difficulty}</td>
-        <td>${item.lists || ''}</td>
-      `;
-      tr.onclick = () => showDetail(idx);
-      tbody.appendChild(tr);
-    });
-  }
-
-  function showDetail(index) {
-    const item = data[index];
-    document.getElementById('question-title').textContent = item["question header"];
-    document.getElementById('external-link').href = item["problem link"];
-
-    fetchText(item.question).then(t =>
-      document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
-    fetchText(item.code).then(t =>
-      document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`);
-    fetchText(item.explanation).then(t =>
-      document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
-
-    document.querySelector("input[onchange*=question]").checked = true;
-    document.querySelector("input[onchange*=code]").checked = false;
-    document.querySelector("input[onchange*=explanation]").checked = false;
-
-    document.getElementById('pane-question').classList.remove('hidden');
-    document.getElementById('pane-code').classList.add('hidden');
-    document.getElementById('pane-explanation').classList.add('hidden');
-    document.getElementById('resizer1').classList.add('hidden');
-    document.getElementById('resizer2').classList.add('hidden');
-
-    document.getElementById('list-page').classList.remove('active');
-    document.getElementById('detail-page').classList.add('active');
-  }
-
-  function goBack() {
-    document.getElementById('detail-page').classList.remove('active');
-    document.getElementById('list-page').classList.add('active');
-  }
-
-  function togglePane(type) {
-    const pane = document.getElementById(`pane-${type}`);
-    const resizer = document.getElementById(`resizer${type === 'question' ? 1 : type === 'code' ? 2 : ''}`);
-    const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
-    const show = checkbox.checked;
-    pane.classList.toggle('hidden', !show);
-    if (resizer) resizer.classList.toggle('hidden', !show);
-  }
-
-  function initResize(resizer, leftPane, rightPane) {
-    let startX;
-    resizer.addEventListener('mousedown', function(e) {
-      startX = e.clientX;
-      const leftWidth = leftPane.getBoundingClientRect().width;
-      const rightWidth = rightPane.getBoundingClientRect().width;
-
-      function onMouseMove(e) {
-        const dx = e.clientX - startX;
-        leftPane.style.flex = `0 0 ${leftWidth + dx}px`;
-        rightPane.style.flex = `0 0 ${rightWidth - dx}px`;
-      }
-
-      function onMouseUp() {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      }
-
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
-  }
-
-  fetch('data/questions.csv')
-    .then(res => res.text())
-    .then(text => {
-      data.push(...parseCSV(text));
-      renderFilters();
-      renderTable();
-    });
-
-  
-  function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-  }
-
-  // Load theme preference on startup
-  window.onload = () => {
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark-mode');
+    function parseCSV(text) {
+      const [headerLine, ...lines] = text.trim().split('\n');
+      const headers = headerLine.split(',').map(h => h.trim());
+      return lines.map(line => {
+        const values = line.split(',').map(v => v.trim());
+        return headers.reduce((obj, header, i) => {
+          obj[header] = values[i] || '';
+          return obj;
+        }, {});
+      });
     }
 
-    initResize(document.getElementById('resizer1'), document.getElementById('pane-question'), document.getElementById('pane-code'));
-    initResize(document.getElementById('resizer2'), document.getElementById('pane-code'), document.getElementById('pane-explanation'));
-  };
+    function fetchText(url) {
+      return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
+    }
 
-</script>
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, tag => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
+      ));
+    }
+
+    function renderFilters() {
+      const topicSet = new Set(data.map(d => d.topic));
+      const diffSet = new Set(data.map(d => d.difficulty));
+      const listSet = new Set();
+
+      data.forEach(d => {
+        if (d.lists) {
+          d.lists.split(';').map(s => s.trim()).forEach(tag => listSet.add(tag));
+        }
+      });
+
+      document.getElementById('topic-filter').innerHTML =
+        '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
+      document.getElementById('difficulty-filter').innerHTML =
+        '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+      document.getElementById('list-filter').innerHTML =
+        '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('question-table-body');
+      const topicVal = document.getElementById('topic-filter').value;
+      const diffVal = document.getElementById('difficulty-filter').value;
+      const listVal = document.getElementById('list-filter').value;
+
+      tbody.innerHTML = '';
+      data.forEach((item, idx) => {
+        const listTags = (item.lists || '').split(';').map(s => s.trim());
+        if ((topicVal && item.topic !== topicVal) ||
+            (diffVal && item.difficulty !== diffVal) ||
+            (listVal && !listTags.includes(listVal))) return;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.topic}</td>
+          <td>${item["question header"]}</td>
+          <td>${item.difficulty}</td>
+          <td>${item.lists || ''}</td>
+        `;
+        tr.onclick = () => showDetail(idx);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function showDetail(index) {
+      const item = data[index];
+      document.getElementById('question-title').textContent = item["question header"];
+      document.getElementById('external-link').href = item["problem link"];
+
+      fetchText(item.question).then(t =>
+        document.getElementById('pane-question').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
+      fetchText(item.code).then(t =>
+        document.getElementById('pane-code').innerHTML = `<pre>// Language: ${item["code language"]}\n${escapeHTML(t)}</pre>`);
+      fetchText(item.explanation).then(t =>
+        document.getElementById('pane-explanation').innerHTML = `<pre>${escapeHTML(t)}</pre>`);
+
+      document.querySelector("input[onchange*=question]").checked = true;
+      document.querySelector("input[onchange*=code]").checked = false;
+      document.querySelector("input[onchange*=explanation]").checked = false;
+
+      document.getElementById('pane-question').classList.remove('hidden');
+      document.getElementById('pane-code').classList.add('hidden');
+      document.getElementById('pane-explanation').classList.add('hidden');
+      document.getElementById('resizer1').classList.add('hidden');
+      document.getElementById('resizer2').classList.add('hidden');
+
+      document.getElementById('list-page').classList.remove('active');
+      document.getElementById('detail-page').classList.add('active');
+    }
+
+    function goBack() {
+      document.getElementById('detail-page').classList.remove('active');
+      document.getElementById('list-page').classList.add('active');
+    }
+
+    function togglePane(type) {
+      const pane = document.getElementById(`pane-${type}`);
+      const resizer = document.getElementById(`resizer${type === 'question' ? 1 : type === 'code' ? 2 : ''}`);
+      const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
+      const show = checkbox.checked;
+      pane.classList.toggle('hidden', !show);
+      if (resizer) resizer.classList.toggle('hidden', !show);
+    }
+
+    function initResize(resizer, leftPane, rightPane) {
+      let startX;
+      resizer.addEventListener('mousedown', function(e) {
+        startX = e.clientX;
+        const leftWidth = leftPane.getBoundingClientRect().width;
+        const rightWidth = rightPane.getBoundingClientRect().width;
+
+        function onMouseMove(e) {
+          const dx = e.clientX - startX;
+          leftPane.style.flex = `0 0 ${leftWidth + dx}px`;
+          rightPane.style.flex = `0 0 ${rightWidth - dx}px`;
+        }
+
+        function onMouseUp() {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    // Init
+    fetch('data/questions.csv')
+      .then(res => res.text())
+      .then(text => {
+        data.push(...parseCSV(text));
+        renderFilters();
+        renderTable();
+      });
+
+    window.onload = () => {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+      initResize(document.getElementById('resizer1'), document.getElementById('pane-question'), document.getElementById('pane-code'));
+      initResize(document.getElementById('resizer2'), document.getElementById('pane-code'), document.getElementById('pane-explanation'));
+    };
+  </script>
 </body>
 </html>
