@@ -33,6 +33,7 @@
        <!-- Progress Bar -->
       <div class="mb-4">
         <label class="block mb-1 font-medium">Progress</label>
+        <button onclick="resetProgress()" class="text-sm text-red-500 hover:underline mt-1">⟳</button>
         <div class="w-full bg-gray-300 dark:bg-gray-700 rounded h-4">
           <div id="progress-slider" class="bg-green-500 h-4 rounded transition-all" style="width: 0%"></div>
         </div>
@@ -55,23 +56,17 @@
           <select id="list-filter" onchange="renderTable()"
             class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
         </div>
-        
-        <div class="flex flex-col items-start justify-end gap-2">
-          <span id="progress-text" class="text-sm font-semibold text-indigo-500"></span>
-          <input type="range" id="progress-slider" min="0" max="100" value="0" class="w-48 accent-indigo-500" disabled />
-          <button onclick="resetProgress()" class="text-sm text-red-500 hover:underline mt-1">⟳</button>
-        </div>
       </div>
 
       <div class="overflow-x-auto rounded shadow bg-white dark:bg-gray-800">
         <table class="min-w-full text-sm text-left table-auto">
           <thead class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
             <tr>
+              <th class="px-4 py-2">Status</th>
               <th class="px-4 py-2">Topic</th>
               <th class="px-4 py-2">Question</th>
               <th class="px-4 py-2">Difficulty</th>
               <th class="px-4 py-2">List</th>
-              <th class="px-4 py-2">Status</th>
             </tr>
           </thead>
           <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100"></tbody>
