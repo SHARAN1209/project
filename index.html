@@ -58,6 +58,7 @@
               <th class="px-4 py-2">Question</th>
               <th class="px-4 py-2">Difficulty</th>
               <th class="px-4 py-2">List</th>
+              <th class="px-4 py-2">Status</th>
             </tr>
           </thead>
           <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100">
@@ -159,10 +160,25 @@
           <td class="px-4 py-2">${item["question header"]}</td>
           <td class="px-4 py-2">${item.difficulty}</td>
           <td class="px-4 py-2">${item.lists || ''}</td>
+          <td class="px-4 py-2">
+            <label class="inline-flex items-center space-x-2">
+              <input type="checkbox" onchange="toggleCompletion(this)" class="form-checkbox h-5 w-5 text-green-600">
+              <span class="percentage hidden text-green-600 font-semibold">100%</span>
+            </label>
+          </td>
         `;
         tr.onclick = () => showDetail(idx);
         tbody.appendChild(tr);
       });
+    }
+
+    function toggleCompletion(checkbox) {
+      const percent = checkbox.closest('td').querySelector('.percentage');
+      if (checkbox.checked) {
+        percent.classList.remove('hidden');
+      } else {
+        percent.classList.add('hidden');
+      }
     }
 
     function showDetail(index) {
