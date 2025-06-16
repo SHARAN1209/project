@@ -29,6 +29,17 @@
     <!-- List Page -->
     <div id="list-page" class="page">
       <h2 class="text-2xl font-semibold mb-4">Questions</h2>
+
+      <!-- Progress Bar -->
+      <div class="mb-4">
+        <label class="block mb-1 font-medium">Progress</label>
+        <div class="w-full bg-gray-300 dark:bg-gray-700 rounded h-4">
+          <div id="progress-bar" class="bg-green-500 h-4 rounded transition-all" style="width: 0%"></div>
+        </div>
+        <p id="progress-text" class="text-sm mt-1 text-gray-600 dark:text-gray-300"></p>
+      </div>
+
+      <!-- Filters -->
       <div class="flex flex-wrap gap-4 mb-6">
         <div class="flex flex-col">
           <label class="font-medium mb-1">Topic</label>
@@ -45,11 +56,9 @@
           <select id="list-filter" onchange="renderTable()"
             class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
         </div>
-        <div class="flex items-end">
-          <span id="progress-text" class="text-sm font-semibold text-indigo-500"></span>
-        </div>
       </div>
 
+      <!-- Table -->
       <div class="overflow-x-auto rounded shadow bg-white dark:bg-gray-800">
         <table class="min-w-full text-sm text-left table-auto">
           <thead class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
@@ -61,7 +70,8 @@
               <th class="px-4 py-2">Status</th>
             </tr>
           </thead>
-          <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100"></tbody>
+          <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100">
+          </tbody>
         </table>
       </div>
     </div>
@@ -69,15 +79,18 @@
     <!-- Detail Page -->
     <div id="detail-page" class="hidden">
       <button class="mt-4 mb-4 px-4 py-2 rounded bg-indigo-500 text-white hover:bg-indigo-600" onclick="goBack()">← Back</button>
+
       <div class="flex justify-between items-center mb-4">
         <span id="question-title" class="text-xl font-semibold"></span>
         <a id="external-link" href="#" target="_blank" class="text-indigo-400 hover:underline text-lg">🔗</a>
       </div>
+
       <div class="flex flex-wrap gap-4 mb-4">
         <label><input type="checkbox" checked onchange="togglePane('question')" class="mr-1"> Question</label>
         <label><input type="checkbox" onchange="togglePane('code')" class="mr-1"> Code</label>
         <label><input type="checkbox" onchange="togglePane('explanation')" class="mr-1"> Explanation</label>
       </div>
+
       <div id="resizable-grid" class="flex flex-col md:flex-row w-full border rounded overflow-hidden">
         <div id="pane-question" class="flex-1 p-4 overflow-auto border-b md:border-b-0 md:border-r dark:border-gray-700">
           <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
@@ -94,6 +107,86 @@
 
   <script>
     const data = [];
+
+    function getStatusMap() {
+      return JSON.parse(localStorage.getItem('questionStatusMap') || '{}');
+    }
+
+    function saveStatusMap(map) {
+      localStorage.setItem('questionStatusMap', JSON.stringify(map));
+    }
+
+    function updateProgress() {
+      const total = data.length;
+      const checked = Object.values(getStatusMap()).filter(Boolean).length;
+      const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+      document.getElementById('progress-bar').style.width = percent + '%';
+      document.getElementById('progress-text').textContent = `${checked} of ${total} completed (${percent}%)`;
+    }
+
+    function renderFilters() {
+      const topicSet = new Set(data.map(d => d.topic));
+      const diffSet = new Set(data.map(d => d.difficulty));
+      const listSet = new Set();
+
+      data.forEach(d => {
+        if (d.lists) {
+          d.lists.split('|').map(s => s.trim()).forEach(tag => listSet.add(tag));
+        }
+      });
+
+      document.getElementById('topic-filter').innerHTML =
+        '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
+      document.getElementById('difficulty-filter').innerHTML =
+        '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+      document.getElementById('list-filter').innerHTML =
+        '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('question-table-body');
+      const topicVal = document.getElementById('topic-filter').value;
+      const diffVal = document.getElementById('difficulty-filter').value;
+      const listVal = document.getElementById('list-filter').value;
+      const statusMap = getStatusMap();
+
+      tbody.innerHTML = '';
+      data.forEach((item, idx) => {
+        const listTags = (item.lists || '').split('|').map(s => s.trim());
+        if ((topicVal && item.topic !== topicVal) ||
+            (diffVal && item.difficulty !== diffVal) ||
+            (listVal && !listTags.includes(listVal))) return;
+
+        const id = `q-${idx}`;
+        const checked = statusMap[id] || false;
+
+        const tr = document.createElement('tr');
+        tr.className = `hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${checked ? 'bg-green-100 dark:bg-green-800' : ''}`;
+
+        tr.innerHTML = `
+          <td class="px-4 py-2">${item.topic}</td>
+          <td class="px-4 py-2">${item["question header"]}</td>
+          <td class="px-4 py-2">${item.difficulty}</td>
+          <td class="px-4 py-2">${item.lists || ''}</td>
+          <td class="px-4 py-2"><input type="checkbox" class="status-checkbox" data-id="${id}" ${checked ? 'checked' : ''} onclick="event.stopPropagation();"></td>
+        `;
+
+        tr.addEventListener('click', () => showDetail(idx));
+        tbody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.status-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+          const map = getStatusMap();
+          map[this.dataset.id] = this.checked;
+          saveStatusMap(map);
+          renderTable(); // re-render for color
+        });
+      });
+
+      updateProgress();
+    }
 
     function parseCSV(text) {
       const [headerLine, ...lines] = text.trim().split('\n');
@@ -117,91 +210,17 @@
       ));
     }
 
-    function getStatusMap() {
-      return JSON.parse(localStorage.getItem('questionStatus') || '{}');
-    }
-
-    function saveStatusMap(map) {
-      localStorage.setItem('questionStatus', JSON.stringify(map));
-    }
-
-    function updateProgress() {
-      const checkboxes = document.querySelectorAll('.status-checkbox');
-      const total = checkboxes.length;
-      const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
-      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
-      document.getElementById('progress-text').textContent = `${checked}/${total} (${percent}%) completed`;
-    }
-
-    function renderFilters() {
-      const topicSet = new Set(data.map(d => d.topic));
-      const diffSet = new Set(data.map(d => d.difficulty));
-      const listSet = new Set();
-
-      data.forEach(d => {
-        if (d.lists) {
-          d.lists.split('|').map(s => s.trim()).forEach(tag => listSet.add(tag));
-        }
-      });
-
-      document.getElementById('topic-filter').innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
-      document.getElementById('difficulty-filter').innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
-      document.getElementById('list-filter').innerHTML = '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
-    }
-
-    function renderTable() {
-      const topicVal = document.getElementById('topic-filter').value;
-      const diffVal = document.getElementById('difficulty-filter').value;
-      const listVal = document.getElementById('list-filter').value;
-      const statusMap = getStatusMap();
-
-      const tbody = document.getElementById('question-table-body');
-      tbody.innerHTML = '';
-
-      data.forEach((item, idx) => {
-        const listTags = (item.lists || '').split('|').map(s => s.trim());
-        if ((topicVal && item.topic !== topicVal) ||
-            (diffVal && item.difficulty !== diffVal) ||
-            (listVal && !listTags.includes(listVal))) return;
-
-        const id = `q-${idx}`;
-        const checked = statusMap[id] || false;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer";
-        tr.innerHTML = `
-          <td class="px-4 py-2">${item.topic}</td>
-          <td class="px-4 py-2">${item["question header"]}</td>
-          <td class="px-4 py-2">${item.difficulty}</td>
-          <td class="px-4 py-2">${item.lists || ''}</td>
-          <td class="px-4 py-2">
-            <input type="checkbox" class="status-checkbox" data-id="${id}" ${checked ? 'checked' : ''} onclick="event.stopPropagation();">
-          </td>
-        `;
-        tr.addEventListener('click', () => showDetail(idx));
-        tbody.appendChild(tr);
-      });
-
-      document.querySelectorAll('.status-checkbox').forEach(cb => {
-        cb.addEventListener('change', function () {
-          const map = getStatusMap();
-          map[this.dataset.id] = this.checked;
-          saveStatusMap(map);
-          updateProgress();
-        });
-      });
-
-      updateProgress();
-    }
-
     function showDetail(index) {
       const item = data[index];
       document.getElementById('question-title').textContent = item["question header"];
       document.getElementById('external-link').href = item["problem link"];
 
-      fetchText(item.question).then(t => document.querySelector('#pane-question pre').innerHTML = escapeHTML(t));
-      fetchText(item.code).then(t => document.querySelector('#pane-code pre').innerHTML = `// Language: ${item["code language"]}\n` + escapeHTML(t));
-      fetchText(item.explanation).then(t => document.querySelector('#pane-explanation pre').innerHTML = escapeHTML(t));
+      fetchText(item.question).then(t =>
+        document.querySelector('#pane-question pre').innerHTML = escapeHTML(t));
+      fetchText(item.code).then(t =>
+        document.querySelector('#pane-code pre').innerHTML = `// Language: ${item["code language"]}\n` + escapeHTML(t));
+      fetchText(item.explanation).then(t =>
+        document.querySelector('#pane-explanation pre').innerHTML = escapeHTML(t));
 
       document.querySelector("input[onchange*=question]").checked = true;
       document.querySelector("input[onchange*=code]").checked = false;
