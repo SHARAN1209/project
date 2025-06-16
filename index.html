@@ -6,18 +6,8 @@
   <title>Flexible Question Viewer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
+    tailwind.config = { darkMode: 'class' };
   </script>
-  <style>
-    .resizer {
-      background-color: #a1a1aa;
-    }
-    .resizer:hover {
-      background-color: #71717a;
-    }
-  </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
   <header class="fixed top-0 left-0 w-full bg-gray-800 text-white shadow z-10 px-6 py-3 flex justify-between items-center">
@@ -26,77 +16,47 @@
   </header>
 
   <main class="pt-20 px-4 max-w-6xl mx-auto">
-    <!-- List Page -->
-    <div id="list-page" class="page">
-      <h2 class="text-2xl font-semibold mb-4">Questions</h2>
-      <div class="flex flex-wrap gap-4 mb-6">
-        <div class="flex flex-col">
-          <label class="font-medium mb-1">Topic</label>
-          <select id="topic-filter" onchange="renderTable()"
-            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-          </select>
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium mb-1">Difficulty</label>
-          <select id="difficulty-filter" onchange="renderTable()"
-            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-          </select>
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium mb-1">List</label>
-          <select id="list-filter" onchange="renderTable()"
-            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-          </select>
-        </div>
-      </div>
+    <!-- Progress Display -->
+    <div class="mb-4 text-lg font-medium">
+      Progress: <span id="completion-percentage">0%</span>
+    </div>
 
-      <div class="overflow-x-auto rounded shadow bg-white dark:bg-gray-800">
-        <table class="min-w-full text-sm text-left table-auto">
-          <thead class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
-            <tr>
-              <th class="px-4 py-2">Topic</th>
-              <th class="px-4 py-2">Question</th>
-              <th class="px-4 py-2">Difficulty</th>
-              <th class="px-4 py-2">List</th>
-            </tr>
-          </thead>
-          <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100">
-          </tbody>
-        </table>
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-4 mb-6">
+      <div class="flex flex-col">
+        <label class="font-medium mb-1">Topic</label>
+        <select id="topic-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium mb-1">Difficulty</label>
+        <select id="difficulty-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium mb-1">List</label>
+        <select id="list-filter" onchange="renderTable()" class="rounded p-2 border dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
       </div>
     </div>
 
-    <!-- Detail Page -->
-    <div id="detail-page" class="hidden">
-      <button class="mt-4 mb-4 px-4 py-2 rounded bg-indigo-500 text-white hover:bg-indigo-600" onclick="goBack()">← Back</button>
-
-      <div class="flex justify-between items-center mb-4">
-        <span id="question-title" class="text-xl font-semibold"></span>
-        <a id="external-link" href="#" target="_blank" class="text-indigo-400 hover:underline text-lg">🔗</a>
-      </div>
-
-      <div class="flex flex-wrap gap-4 mb-4">
-        <label><input type="checkbox" checked onchange="togglePane('question')" class="mr-1"> Question</label>
-        <label><input type="checkbox" onchange="togglePane('code')" class="mr-1"> Code</label>
-        <label><input type="checkbox" onchange="togglePane('explanation')" class="mr-1"> Explanation</label>
-      </div>
-
-      <div id="resizable-grid" class="flex flex-col md:flex-row w-full border rounded overflow-hidden">
-        <div id="pane-question" class="flex-1 p-4 overflow-auto border-b md:border-b-0 md:border-r dark:border-gray-700">
-          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
-        </div>
-        <div id="pane-code" class="hidden flex-1 p-4 overflow-auto border-b md:border-b-0 md:border-r dark:border-gray-700">
-          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
-        </div>
-        <div id="pane-explanation" class="hidden flex-1 p-4 overflow-auto">
-          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
-        </div>
-      </div>
+    <!-- Questions Table -->
+    <div class="overflow-x-auto rounded shadow bg-white dark:bg-gray-800">
+      <table class="min-w-full text-sm text-left table-auto">
+        <thead class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+          <tr>
+            <th class="px-4 py-2">Topic</th>
+            <th class="px-4 py-2">Question</th>
+            <th class="px-4 py-2">Difficulty</th>
+            <th class="px-4 py-2">List</th>
+            <th class="px-4 py-2">Status</th>
+          </tr>
+        </thead>
+        <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100"></tbody>
+      </table>
     </div>
   </main>
 
   <script>
     const data = [];
+    const STORAGE_KEY = 'question-status';
 
     function parseCSV(text) {
       const [headerLine, ...lines] = text.trim().split('\n');
@@ -110,25 +70,13 @@
       });
     }
 
-    function fetchText(url) {
-      return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
-    }
-
-    function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, tag => (
-        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
-      ));
-    }
-
     function renderFilters() {
       const topicSet = new Set(data.map(d => d.topic));
       const diffSet = new Set(data.map(d => d.difficulty));
       const listSet = new Set();
 
       data.forEach(d => {
-        if (d.lists) {
-          d.lists.split('|').map(s => s.trim()).forEach(tag => listSet.add(tag));
-        }
+        (d.lists || '').split('|').map(s => s.trim()).forEach(tag => listSet.add(tag));
       });
 
       document.getElementById('topic-filter').innerHTML =
@@ -139,65 +87,63 @@
         '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
     }
 
+    function getStatusMap() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    }
+
+    function saveStatusMap(map) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+    }
+
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('.status-checkbox');
+      const total = checkboxes.length;
+      const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+      document.getElementById('completion-percentage').textContent = `${percent}%`;
+    }
+
     function renderTable() {
-      const tbody = document.getElementById('question-table-body');
       const topicVal = document.getElementById('topic-filter').value;
       const diffVal = document.getElementById('difficulty-filter').value;
       const listVal = document.getElementById('list-filter').value;
+      const statusMap = getStatusMap();
 
+      const tbody = document.getElementById('question-table-body');
       tbody.innerHTML = '';
+
       data.forEach((item, idx) => {
         const listTags = (item.lists || '').split('|').map(s => s.trim());
         if ((topicVal && item.topic !== topicVal) ||
             (diffVal && item.difficulty !== diffVal) ||
             (listVal && !listTags.includes(listVal))) return;
 
+        const id = `q-${idx}`;
+        const checked = statusMap[id] || false;
+
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer";
         tr.innerHTML = `
           <td class="px-4 py-2">${item.topic}</td>
           <td class="px-4 py-2">${item["question header"]}</td>
           <td class="px-4 py-2">${item.difficulty}</td>
           <td class="px-4 py-2">${item.lists || ''}</td>
+          <td class="px-4 py-2">
+            <input type="checkbox" class="status-checkbox" data-id="${id}" ${checked ? 'checked' : ''}>
+          </td>
         `;
-        tr.onclick = () => showDetail(idx);
         tbody.appendChild(tr);
       });
-    }
 
-    function showDetail(index) {
-      const item = data[index];
-      document.getElementById('question-title').textContent = item["question header"];
-      document.getElementById('external-link').href = item["problem link"];
+      document.querySelectorAll('.status-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+          const map = getStatusMap();
+          map[this.dataset.id] = this.checked;
+          saveStatusMap(map);
+          updateProgress();
+        });
+      });
 
-      fetchText(item.question).then(t =>
-        document.querySelector('#pane-question pre').innerHTML = escapeHTML(t));
-      fetchText(item.code).then(t =>
-        document.querySelector('#pane-code pre').innerHTML = `// Language: ${item["code language"]}\n` + escapeHTML(t));
-      fetchText(item.explanation).then(t =>
-        document.querySelector('#pane-explanation pre').innerHTML = escapeHTML(t));
-
-      document.querySelector("input[onchange*=question]").checked = true;
-      document.querySelector("input[onchange*=code]").checked = false;
-      document.querySelector("input[onchange*=explanation]").checked = false;
-
-      togglePane('question');
-      togglePane('code');
-      togglePane('explanation');
-
-      document.getElementById('list-page').classList.add('hidden');
-      document.getElementById('detail-page').classList.remove('hidden');
-    }
-
-    function goBack() {
-      document.getElementById('detail-page').classList.add('hidden');
-      document.getElementById('list-page').classList.remove('hidden');
-    }
-
-    function togglePane(type) {
-      const pane = document.getElementById(`pane-${type}`);
-      const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
-      pane.classList.toggle('hidden', !checkbox.checked);
+      updateProgress();
     }
 
     function toggleDarkMode() {
