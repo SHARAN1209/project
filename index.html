@@ -45,8 +45,11 @@
           <select id="list-filter" onchange="renderTable()"
             class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
         </div>
-        <div class="flex items-end">
+        
+        <div class="flex flex-col items-start justify-end gap-2">
           <span id="progress-text" class="text-sm font-semibold text-indigo-500"></span>
+          <input type="range" id="progress-slider" min="0" max="100" value="0" class="w-48 accent-indigo-500" disabled />
+          <button onclick="resetProgress()" class="text-sm text-red-500 hover:underline mt-1">Reset Progress</button>
         </div>
       </div>
 
@@ -124,14 +127,26 @@
     function saveStatusMap(map) {
       localStorage.setItem('questionStatus', JSON.stringify(map));
     }
-
+    
     function updateProgress() {
       const checkboxes = document.querySelectorAll('.status-checkbox');
       const total = checkboxes.length;
       const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
       const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+    
       document.getElementById('progress-text').textContent = `${checked}/${total} (${percent}%) completed`;
+      const slider = document.getElementById('progress-slider');
+      slider.value = percent;
+      slider.disabled = total === 0;
     }
+
+    function resetProgress() {
+      if (!confirm('Are you sure you want to reset all progress?')) return;
+      localStorage.removeItem('questionStatus');
+      renderTable();
+    }
+
+
 
     function renderFilters() {
       const topicSet = new Set(data.map(d => d.topic));
