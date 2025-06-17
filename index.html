@@ -37,16 +37,35 @@
         /* Base Styles */
         .split-pane {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            flex: 1;
             min-width: 0;
+            min-height: 300px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             transform: translateZ(0);
             perspective: 1000px;
         }
 
-        .split-pane:hover {
-            transform: translateY(-2px) translateZ(0);
+        /* Mobile-first styles */
+        @media (max-width: 768px) {
+            .split-pane {
+                width: 100% !important;
+                min-height: 250px;
+            }
+
+            .split-pane:not(.full-width) {
+                flex: none;
+            }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 769px) {
+            .split-pane {
+                flex: 1;
+            }
+
+            .split-pane:hover {
+                transform: translateY(-2px) translateZ(0);
+            }
         }
 
         .full-width {
@@ -383,10 +402,8 @@
                         <input type="checkbox" onchange="togglePane('explanation')" class="custom-checkbox">
                         <span>Explanation</span>
                     </label>
-                </div>
-
-                <!-- Content Grid -->
-                <div id="content-grid" class="flex flex-row gap-4 min-h-[300px]">
+                </div>                <!-- Content Grid -->
+                <div id="content-grid" class="flex flex-col md:flex-row gap-4 min-h-[300px]">
                     <div id="pane-question" class="split-pane full-width transform transition-all duration-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700">
                         <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
                             <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-100"></pre>
@@ -592,9 +609,7 @@
         function goBack() {
             document.getElementById('detail-page').classList.add('hidden');
             document.getElementById('list-page').classList.remove('hidden');
-        }
-
-        function togglePane(type) {
+        }        function togglePane(type) {
             const pane = document.getElementById(`pane-${type}`);
             const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
             
@@ -615,9 +630,23 @@
                 }
             });
 
-            // Simple flexbox-based layout
+            // Handle layout based on viewport and number of visible panes
+            const isMobile = window.innerWidth < 768;
+            const contentGrid = document.getElementById('content-grid');
+
             if (visiblePanes.length === 1) {
                 document.getElementById(`pane-${visiblePanes[0]}`).classList.add('full-width');
+            } else if (isMobile) {
+                // On mobile, all visible panes take full width
+                visiblePanes.forEach(paneId => {
+                    document.getElementById(`pane-${paneId}`).style.width = '100%';
+                });
+            } else {
+                // On desktop, split width evenly
+                const width = `${100 / visiblePanes.length}%`;
+                visiblePanes.forEach(paneId => {
+                    document.getElementById(`pane-${paneId}`).style.width = width;
+                });
             }
         }
 
