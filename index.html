@@ -1,297 +1,653 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flexible Question Viewer</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
-  </script>
-  <style>
-    .resizer {
-      background-color: #a1a1aa;
-    }
-    .resizer:hover {
-      background-color: #71717a;
-    }
-  </style>
-</head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
-  <header class="fixed top-0 left-0 w-full bg-gray-800 text-white shadow z-10 px-6 py-3 flex justify-between items-center">
-    <h1 class="text-xl font-semibold">XYZ</h1>
-    <button class="bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded" onclick="toggleDarkMode()">🌓</button>
-  </header>
-
-  <main class="pt-20 px-4 max-w-6xl mx-auto">
-    <div id="list-page" class="page">
-      <h2 class="text-2xl font-semibold mb-4">ABC...</h2>
-
-      <!-- Progress Bar -->
-      <div class="mb-4">
-        <div class="flex items-center justify-between mb-1">
-          <label class="font-medium">Progress</label>
-          <button onclick="resetProgress()" class="text-sm font-medium text-red-600 hover:underline">Reset Progress</button>
-        </div>
-        <div class="w-full bg-gray-300 dark:bg-gray-700 rounded h-4">
-          <div id="progress-slider" class="bg-green-500 h-4 rounded transition-all" style="width: 0%"></div>
-        </div>
-        <p id="progress-text" class="text-sm mt-1 text-gray-600 dark:text-gray-300"></p>
-      </div>
-
-      <!-- Filters -->
-      <div class="flex flex-wrap gap-4 mb-6">
-        <div class="flex flex-col">
-          <label class="font-medium mb-1">Topic</label>
-          <select id="topic-filter" onchange="renderTable()"
-            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium mb-1">Difficulty</label>
-          <select id="difficulty-filter" onchange="renderTable()"
-            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium mb-1">List</label>
-          <select id="list-filter" onchange="renderTable()"
-            class="rounded p-2 border bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
-        </div>
-        <div class="flex items-end">
-          <button onclick="resetFilters()" class="text-sm font-medium text-red-600 hover:underline">Reset Filters</button>
-        </div>
-      </div>
-
-      <div class="overflow-x-auto rounded shadow bg-white dark:bg-gray-800">
-        <table class="min-w-full text-sm text-left table-auto">
-          <thead class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
-            <tr>
-              <th class="px-4 py-2">Status</th>
-              <th class="px-4 py-2">Topic</th>
-              <th class="px-4 py-2">Question</th>
-              <th class="px-4 py-2">Difficulty</th>
-              <th class="px-4 py-2">List</th>
-            </tr>
-          </thead>
-          <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-gray-100"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Detail Page -->
-    <div id="detail-page" class="hidden">
-      <button class="mt-4 mb-4 px-4 py-2 rounded bg-indigo-500 text-white hover:bg-indigo-600" onclick="goBack()">← Back</button>
-      <div class="flex justify-between items-center mb-4">
-        <span id="question-title" class="text-xl font-semibold"></span>
-        <a id="external-link" href="#" target="_blank" class="text-indigo-400 hover:underline text-lg">🔗</a>
-      </div>
-      <div class="flex flex-wrap gap-4 mb-4">
-        <label><input type="checkbox" checked onchange="togglePane('question')" class="mr-1"> Question</label>
-        <label><input type="checkbox" onchange="togglePane('code')" class="mr-1"> Code</label>
-        <label><input type="checkbox" onchange="togglePane('explanation')" class="mr-1"> Explanation</label>
-      </div>
-      <div id="resizable-grid" class="flex flex-col md:flex-row w-full border rounded overflow-hidden">
-        <div id="pane-question" class="flex-1 p-4 overflow-auto border-b md:border-b-0 md:border-r dark:border-gray-700">
-          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
-        </div>
-        <div id="pane-code" class="hidden flex-1 p-4 overflow-auto border-b md:border-b-0 md:border-r dark:border-gray-700">
-          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
-        </div>
-        <div id="pane-explanation" class="hidden flex-1 p-4 overflow-auto">
-          <pre class="whitespace-pre-wrap font-mono text-sm"></pre>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <script>
-    const data = [];
-
-    function parseCSV(text) {
-      const [headerLine, ...lines] = text.trim().split('\n');
-      const headers = headerLine.split(',').map(h => h.trim());
-      return lines.map(line => {
-        const values = line.split(',').map(v => v.trim());
-        return headers.reduce((obj, header, i) => {
-          obj[header] = values[i] || '';
-          return obj;
-        }, {});
-      });
-    }
-
-    function fetchText(url) {
-      return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
-    }
-
-    function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, tag => (
-        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
-      ));
-    }
-
-    function getStatusMap() {
-      return JSON.parse(localStorage.getItem('questionStatus') || '{}');
-    }
-
-    function saveStatusMap(map) {
-      localStorage.setItem('questionStatus', JSON.stringify(map));
-    }
-
-    function updateProgress() {
-      const checkboxes = document.querySelectorAll('.status-checkbox');
-      const total = checkboxes.length;
-      const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
-      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
-
-      document.getElementById('progress-text').textContent = `${checked}/${total} (${percent}%) completed`;
-      const slider = document.getElementById('progress-slider');
-      slider.style.width = percent + '%';
-    }
-
-    function resetProgress() {
-      if (!confirm('Are you sure you want to reset all progress?')) return;
-      localStorage.removeItem('questionStatus');
-      renderTable();
-    }
-
-    function resetFilters() {
-      localStorage.removeItem('topicFilter');
-      localStorage.removeItem('difficultyFilter');
-      localStorage.removeItem('listFilter');
-
-      document.getElementById('topic-filter').value = '';
-      document.getElementById('difficulty-filter').value = '';
-      document.getElementById('list-filter').value = '';
-
-      renderTable();
-    }
-
-    function renderFilters() {
-      const topicSet = new Set(data.map(d => d.topic));
-      const diffSet = new Set(data.map(d => d.difficulty));
-      const listSet = new Set();
-
-      data.forEach(d => {
-        if (d.lists) {
-          d.lists.split('|').map(s => s.trim()).forEach(tag => listSet.add(tag));
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexible Question Viewer</title>
+    
+    <!-- Tailwind Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'gradient': 'gradient 8s linear infinite',
+                    },
+                    keyframes: {
+                        'gradient': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            }
+                        }
+                    }
+                }
+            }
         }
-      });
+    </script>
+    
+    <!-- Application Styles -->
+    <style>
+        /* Base Styles */
+        .split-pane {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            min-width: 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transform: translateZ(0);
+            perspective: 1000px;
+        }
 
-      const topicFilter = document.getElementById('topic-filter');
-      const diffFilter = document.getElementById('difficulty-filter');
-      const listFilter = document.getElementById('list-filter');
+        .split-pane:hover {
+            transform: translateY(-2px) translateZ(0);
+        }
 
-      topicFilter.innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
-      diffFilter.innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
-      listFilter.innerHTML = '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
+        .full-width {
+            width: 100% !important;
+        }
 
-      // Restore saved filter values
-      topicFilter.value = localStorage.getItem('topicFilter') || '';
-      diffFilter.value = localStorage.getItem('difficultyFilter') || '';
-      listFilter.value = localStorage.getItem('listFilter') || '';
-    }
+        /* Dark Mode Enhancements */
+        .dark .text-enhancement {
+            color: #e5e7eb;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
 
-    function renderTable() {
-      const topicVal = document.getElementById('topic-filter').value;
-      const diffVal = document.getElementById('difficulty-filter').value;
-      const listVal = document.getElementById('list-filter').value;
+        .dark .heading-enhancement {
+            color: #f3f4f6;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
 
-      // Save filter values
-      localStorage.setItem('topicFilter', topicVal);
-      localStorage.setItem('difficultyFilter', diffVal);
-      localStorage.setItem('listFilter', listVal);
+        .dark .text-muted {
+            color: #9ca3af;
+        }
 
-      const statusMap = getStatusMap();
-      const tbody = document.getElementById('question-table-body');
-      tbody.innerHTML = '';
+        /* Glass Effects */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateZ(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-      data.forEach((item, idx) => {
-        const listTags = (item.lists || '').split('|').map(s => s.trim());
-        if ((topicVal && item.topic !== topicVal) ||
-            (diffVal && item.difficulty !== diffVal) ||
-            (listVal && !listTags.includes(listVal))) return;
+        .glass-effect:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px) translateZ(0);
+        }
 
-        const id = `q-${idx}`;
-        const checked = statusMap[id] || false;
+        .dark .glass-effect {
+            background: rgba(17, 24, 39, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer";
-        tr.innerHTML = `
-          <td class="px-4 py-2"><input type="checkbox" class="status-checkbox" data-id="${id}" ${checked ? 'checked' : ''} onclick="event.stopPropagation();"></td>
-          <td class="px-4 py-2">${item.topic}</td>
-          <td class="px-4 py-2">${item["question header"]}</td>
-          <td class="px-4 py-2">${item.difficulty}</td>
-          <td class="px-4 py-2">${item.lists || ''}</td>
-        `;
-        tr.addEventListener('click', () => showDetail(idx));
-        tbody.appendChild(tr);
-      });
+        .dark .glass-effect:hover {
+            background: rgba(17, 24, 39, 0.7);
+        }
 
-      document.querySelectorAll('.status-checkbox').forEach(cb => {
-        cb.addEventListener('change', function () {
-          const map = getStatusMap();
-          map[this.dataset.id] = this.checked;
-          saveStatusMap(map);
-          updateProgress();
+        /* Card Effects */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            perspective: 1000px;
+            transform: translateZ(0);
+        }
+
+        .card-3d:hover {
+            transform: translateY(-5px) rotateX(2deg) rotateY(2deg) translateZ(0);
+            box-shadow: 
+                0 20px 30px -10px rgba(0, 0, 0, 0.2),
+                0 5px 15px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .card-3d:hover {
+            box-shadow: 
+                0 20px 30px -10px rgba(0, 0, 0, 0.4),
+                0 5px 15px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .dark .card-hover {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark .card-hover:hover {
+            background: rgba(17, 24, 39, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Animations */
+        .animate-fade-in {
+            animation: enhanced-fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes enhanced-fade-in {
+            0% { 
+                opacity: 0;
+                transform: translateY(20px) translateZ(-10px);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0) translateZ(0);
+            }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateZ(0); }
+            50% { transform: translateY(-5px) translateZ(0); }
+            100% { transform: translateY(0) translateZ(0); }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-subtle {
+            0% { transform: scale(1) translateZ(0); }
+            50% { transform: scale(1.01) translateZ(0); }
+            100% { transform: scale(1) translateZ(0); }
+        }
+
+        .pulse-on-hover:hover {
+            animation: pulse-subtle 2s ease-in-out infinite;
+        }
+
+        /* Interactive Elements */
+        .button-3d {
+            transform: translateZ(0);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .button-3d:hover {
+            transform: translateY(-2px) translateZ(0);
+            box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+        }
+
+        .button-3d:active {
+            transform: translateY(0) translateZ(0);
+            box-shadow: 0 5px 10px -5px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Progress Bar */
+        .progress-animate {
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+            background-size: 200% 200%;
+            animation: gradient 2s ease infinite;
+            transform: translateZ(0);
+            box-shadow: 0 2px 10px -2px rgba(16, 185, 129, 0.3);
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Form Elements */
+        .custom-checkbox {
+            appearance: none;
+            width: 1.2em;
+            height: 1.2em;
+            border: 2px solid #6366f1;
+            border-radius: 4px;
+            margin-right: 0.5em;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateZ(0);
+        }
+
+        .custom-checkbox:checked {
+            background-color: #6366f1;
+            animation: checkmark-3d 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px -2px rgba(99, 102, 241, 0.5);
+        }
+
+        @keyframes checkmark-3d {
+            0% { transform: scale(1) translateZ(0); }
+            50% { transform: scale(1.2) translateZ(10px); }
+            100% { transform: scale(1) translateZ(0); }
+        }
+
+        /* Table Styles */
+        tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateZ(0);
+        }
+
+        tbody tr:hover {
+            transform: translateX(5px) translateZ(0);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: -5px 0 10px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: -5px 0 10px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Loading Effects */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .loading-shimmer {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.1),
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0.1)
+            );
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full glass-effect z-10 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 dark:from-indigo-200 dark:to-purple-200 text-transparent bg-clip-text animate-gradient heading-enhancement">
+                XYZ
+            </h1>
+            <button class="bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 rounded-lg text-white shadow-lg hover:shadow-xl transition-all duration-300 button-3d" 
+                    onclick="toggleDarkMode()">
+                🌓
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 px-4 max-w-6xl mx-auto space-y-8 min-h-screen pb-24">
+        <!-- List Page -->
+        <div id="list-page" class="page animate-fade-in">
+            <h2 class="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo-500 to-purple-500 dark:from-indigo-300 dark:to-purple-300 text-transparent bg-clip-text heading-enhancement">
+                ABC...
+            </h2>
+
+            <!-- Progress Section -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg card-hover card-3d mb-8">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="font-semibold text-lg text-enhancement">Progress</label>
+                    <button onclick="resetProgress()" 
+                            class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-300 button-3d">
+                        Reset Progress
+                    </button>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+                    <div id="progress-slider" class="progress-animate h-4 rounded-full"></div>
+                </div>
+                <p id="progress-text" class="text-sm mt-2 text-gray-600 dark:text-gray-300"></p>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg card-hover card-3d mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="space-y-2">
+                        <label class="font-semibold text-gray-700 dark:text-gray-200">Topic</label>
+                        <select id="topic-filter" onchange="renderTable()"
+                                class="w-full rounded-lg p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 transition-all">
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-semibold text-gray-700 dark:text-gray-200">Difficulty</label>
+                        <select id="difficulty-filter" onchange="renderTable()"
+                                class="w-full rounded-lg p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 transition-all">
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-semibold text-gray-700 dark:text-gray-200">List</label>
+                        <select id="list-filter" onchange="renderTable()"
+                                class="w-full rounded-lg p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 transition-all">
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="resetFilters()" 
+                                class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-300 button-3d">
+                            Reset Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Table -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg card-hover card-3d overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Status</th>
+                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Topic</th>
+                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Question</th>
+                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Difficulty</th>
+                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">List</th>
+                            </tr>
+                        </thead>
+                        <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Page -->
+        <div id="detail-page" class="hidden space-y-6 animate-fade-in">
+            <button class="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 rounded-lg text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 button-3d" 
+                    onclick="goBack()">
+                <span class="text-lg">←</span>
+                <span>Back</span>
+            </button>
+
+            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg card-hover card-3d">
+                <div class="flex justify-between items-center mb-6">
+                    <span id="question-title" class="text-2xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 dark:from-indigo-200 dark:to-purple-200 text-transparent bg-clip-text heading-enhancement"></span>
+                    <a id="external-link" href="#" target="_blank" 
+                       class="text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors duration-300 text-lg">
+                        🔗
+                    </a>
+                </div>
+
+                <div class="flex flex-wrap gap-6 mb-6">
+                    <label class="flex items-center cursor-pointer text-gray-800 dark:text-gray-200">
+                        <input type="checkbox" checked onchange="togglePane('question')" class="custom-checkbox">
+                        <span>Question</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer text-gray-800 dark:text-gray-200">
+                        <input type="checkbox" onchange="togglePane('code')" class="custom-checkbox">
+                        <span>Code</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer text-gray-800 dark:text-gray-200">
+                        <input type="checkbox" onchange="togglePane('explanation')" class="custom-checkbox">
+                        <span>Explanation</span>
+                    </label>
+                </div>
+
+                <!-- Content Grid -->
+                <div id="content-grid" class="flex flex-row gap-4 min-h-[300px]">
+                    <div id="pane-question" class="split-pane full-width transform transition-all duration-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
+                            <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-100"></pre>
+                        </div>
+                    </div>
+
+                    <div id="pane-code" class="split-pane hidden transform transition-all duration-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
+                            <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-100"></pre>
+                        </div>
+                    </div>
+
+                    <div id="pane-explanation" class="split-pane hidden transform transition-all duration-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
+                            <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-100"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-12 px-4 mt-auto bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col items-center space-y-4">
+                <div class="flex space-x-4 text-gray-600 dark:text-gray-400">
+                    <span>© 2025</span>
+                    <span class="text-gray-400 dark:text-gray-600">|</span>
+                    <span>All rights reserved</span>
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-500">
+                    Made with ❤️ for learners
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Application Scripts -->
+    <script>
+        // Data Storage
+        const data = [];
+
+        // Utility Functions
+        function parseCSV(text) {
+            const [headerLine, ...lines] = text.trim().split('\n');
+            const headers = headerLine.split(',').map(h => h.trim());
+            return lines.map(line => {
+                const values = line.split(',').map(v => v.trim());
+                return headers.reduce((obj, header, i) => {
+                    obj[header] = values[i] || '';
+                    return obj;
+                }, {});
+            });
+        }
+
+        function fetchText(url) {
+            return fetch(url).then(res => res.ok ? res.text() : 'Error loading');
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, tag => (
+                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]
+            ));
+        }
+
+        // Status Management
+        function getStatusMap() {
+            return JSON.parse(localStorage.getItem('questionStatus') || '{}');
+        }
+
+        function saveStatusMap(map) {
+            localStorage.setItem('questionStatus', JSON.stringify(map));
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.status-checkbox');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+
+            document.getElementById('progress-text').textContent = `${checked}/${total} (${percent}%) completed`;
+            const slider = document.getElementById('progress-slider');
+            slider.style.width = percent + '%';
+        }
+
+        // Reset Functions
+        function resetProgress() {
+            if (!confirm('Are you sure you want to reset all progress?')) return;
+            localStorage.removeItem('questionStatus');
+            renderTable();
+        }
+
+        function resetFilters() {
+            localStorage.removeItem('topicFilter');
+            localStorage.removeItem('difficultyFilter');
+            localStorage.removeItem('listFilter');
+
+            document.getElementById('topic-filter').value = '';
+            document.getElementById('difficulty-filter').value = '';
+            document.getElementById('list-filter').value = '';
+
+            renderTable();
+        }
+
+        // Rendering Functions
+        function renderFilters() {
+            const topicSet = new Set(data.map(d => d.topic));
+            const diffSet = new Set(data.map(d => d.difficulty));
+            const listSet = new Set();
+
+            data.forEach(d => {
+                if (d.lists) {
+                    d.lists.split('|').map(s => s.trim()).forEach(tag => listSet.add(tag));
+                }
+            });
+
+            const topicFilter = document.getElementById('topic-filter');
+            const diffFilter = document.getElementById('difficulty-filter');
+            const listFilter = document.getElementById('list-filter');
+
+            topicFilter.innerHTML = '<option value="">All</option>' + [...topicSet].map(t => `<option value="${t}">${t}</option>`).join('');
+            diffFilter.innerHTML = '<option value="">All</option>' + [...diffSet].map(d => `<option value="${d}">${d}</option>`).join('');
+            listFilter.innerHTML = '<option value="">All</option>' + [...listSet].map(l => `<option value="${l}">${l}</option>`).join('');
+
+            // Restore saved filter values
+            topicFilter.value = localStorage.getItem('topicFilter') || '';
+            diffFilter.value = localStorage.getItem('difficultyFilter') || '';
+            listFilter.value = localStorage.getItem('listFilter') || '';
+        }
+
+        function renderTable() {
+            const topicVal = document.getElementById('topic-filter').value;
+            const diffVal = document.getElementById('difficulty-filter').value;
+            const listVal = document.getElementById('list-filter').value;
+
+            // Save filter values
+            localStorage.setItem('topicFilter', topicVal);
+            localStorage.setItem('difficultyFilter', diffVal);
+            localStorage.setItem('listFilter', listVal);
+
+            const statusMap = getStatusMap();
+            const tbody = document.getElementById('question-table-body');
+            tbody.innerHTML = '';
+
+            data.forEach((item, idx) => {
+                const listTags = (item.lists || '').split('|').map(s => s.trim());
+                if ((topicVal && item.topic !== topicVal) ||
+                    (diffVal && item.difficulty !== diffVal) ||
+                    (listVal && !listTags.includes(listVal))) return;
+
+                const id = `q-${idx}`;
+                const checked = statusMap[id] || false;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-800 dark:text-gray-200";
+                tr.innerHTML = `
+                    <td class="px-4 py-2">
+                        <input type="checkbox" class="status-checkbox custom-checkbox" data-id="${id}" ${checked ? 'checked' : ''} onclick="event.stopPropagation();">
+                    </td>
+                    <td class="px-4 py-2 font-medium">${item.topic}</td>
+                    <td class="px-4 py-2">${item["question header"]}</td>
+                    <td class="px-4 py-2 font-medium">${item.difficulty}</td>
+                    <td class="px-4 py-2 text-gray-600 dark:text-gray-300">${item.lists || ''}</td>
+                `;
+                tr.addEventListener('click', () => showDetail(idx));
+                tbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.status-checkbox').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    const map = getStatusMap();
+                    map[this.dataset.id] = this.checked;
+                    saveStatusMap(map);
+                    updateProgress();
+                });
+            });
+
+            updateProgress();
+        }
+
+        // Detail View Functions
+        function showDetail(index) {
+            const item = data[index];
+            document.getElementById('question-title').textContent = item["question header"];
+            document.getElementById('external-link').href = item["problem link"];
+
+            fetchText(item.question).then(t => document.querySelector('#pane-question pre').innerHTML = escapeHTML(t));
+            fetchText(item.code).then(t => document.querySelector('#pane-code pre').innerHTML = `// Language: ${item["code language"]}\n` + escapeHTML(t));
+            fetchText(item.explanation).then(t => document.querySelector('#pane-explanation pre').innerHTML = escapeHTML(t));
+
+            document.querySelector("input[onchange*=question]").checked = true;
+            document.querySelector("input[onchange*=code]").checked = false;
+            document.querySelector("input[onchange*=explanation]").checked = false;
+
+            togglePane('question');
+            togglePane('code');
+            togglePane('explanation');
+
+            document.getElementById('list-page').classList.add('hidden');
+            document.getElementById('detail-page').classList.remove('hidden');
+        }
+
+        function goBack() {
+            document.getElementById('detail-page').classList.add('hidden');
+            document.getElementById('list-page').classList.remove('hidden');
+        }
+
+        function togglePane(type) {
+            const pane = document.getElementById(`pane-${type}`);
+            const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
+            
+            const panes = ['question', 'code', 'explanation'];
+            const visiblePanes = panes.filter(p => 
+                document.querySelector(`input[type='checkbox'][onchange*="${p}"]`).checked
+            );
+
+            // Reset all panes
+            panes.forEach(p => {
+                const currentPane = document.getElementById(`pane-${p}`);
+                currentPane.classList.remove('full-width');
+                currentPane.style.width = ''; // Remove any explicit width
+                if (!document.querySelector(`input[type='checkbox'][onchange*="${p}"]`).checked) {
+                    currentPane.classList.add('hidden');
+                } else {
+                    currentPane.classList.remove('hidden');
+                }
+            });
+
+            // Simple flexbox-based layout
+            if (visiblePanes.length === 1) {
+                document.getElementById(`pane-${visiblePanes[0]}`).classList.add('full-width');
+            }
+        }
+
+        // Theme Functions
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Initialization
+        window.onload = () => {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            fetch('data/questions.csv')
+                .then(res => res.text())
+                .then(text => {
+                    data.push(...parseCSV(text));
+                    renderFilters();
+                    renderTable();
+                });
+        };
+
+        // Initialize dark mode on load
+        window.addEventListener('load', function() {
+            // Dark mode is handled in the main onload function
         });
-      });
-
-      updateProgress();
-    }
-
-    function showDetail(index) {
-      const item = data[index];
-      document.getElementById('question-title').textContent = item["question header"];
-      document.getElementById('external-link').href = item["problem link"];
-
-      fetchText(item.question).then(t => document.querySelector('#pane-question pre').innerHTML = escapeHTML(t));
-      fetchText(item.code).then(t => document.querySelector('#pane-code pre').innerHTML = `// Language: ${item["code language"]}\n` + escapeHTML(t));
-      fetchText(item.explanation).then(t => document.querySelector('#pane-explanation pre').innerHTML = escapeHTML(t));
-
-      document.querySelector("input[onchange*=question]").checked = true;
-      document.querySelector("input[onchange*=code]").checked = false;
-      document.querySelector("input[onchange*=explanation]").checked = false;
-
-      togglePane('question');
-      togglePane('code');
-      togglePane('explanation');
-
-      document.getElementById('list-page').classList.add('hidden');
-      document.getElementById('detail-page').classList.remove('hidden');
-    }
-
-    function goBack() {
-      document.getElementById('detail-page').classList.add('hidden');
-      document.getElementById('list-page').classList.remove('hidden');
-    }
-
-    function togglePane(type) {
-      const pane = document.getElementById(`pane-${type}`);
-      const checkbox = document.querySelector(`input[type='checkbox'][onchange*="${type}"]`);
-      pane.classList.toggle('hidden', !checkbox.checked);
-    }
-
-    function toggleDarkMode() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('darkMode', isDark);
-    }
-
-    window.onload = () => {
-      if (localStorage.getItem('darkMode') === 'true') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-      fetch('data/questions.csv')
-        .then(res => res.text())
-        .then(text => {
-          data.push(...parseCSV(text));
-          renderFilters();
-          renderTable();
-        });
-    };
-  </script>
+    </script>
 </body>
 </html>
