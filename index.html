@@ -423,7 +423,7 @@
         /* Force code editor styling */
         #code-pre {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-            color: #e2e8f0 !important;
+            color: #e2e8f0;  /* Remove !important to allow syntax highlighting to override */
             border: 1px solid #374151 !important;
             font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace !important;
             font-size: 14px !important;
@@ -435,7 +435,7 @@
 
         .dark #code-pre {
             background: linear-gradient(135deg, #020617 0%, #0f172a 100%) !important;
-            color: #f1f5f9 !important;
+            color: #f1f5f9;  /* Remove !important to allow syntax highlighting to override */
             border: 1px solid #1f2937 !important;
         }
 
@@ -510,6 +510,404 @@
         #code-pre .code-number,
         #code-pre .code-method {
             font-family: inherit !important;
+        }
+
+        /* Fullscreen syntax highlighting - Light Mode */
+        .code-comment-fullscreen {
+            color: #64748b !important;
+            font-style: italic !important;
+            opacity: 0.9 !important;
+        }
+
+        .dark .code-comment-fullscreen {
+            color: #6b7280 !important;
+        }
+
+        .code-string-fullscreen {
+            color: #d97706 !important;
+            font-weight: 500 !important;
+        }
+
+        .dark .code-string-fullscreen {
+            color: #fbbf24 !important;
+        }
+
+        .code-keyword-blue-fullscreen {
+            color: #2563eb !important;
+            font-weight: 700 !important;
+        }
+
+        .dark .code-keyword-blue-fullscreen {
+            color: #3b82f6 !important;
+        }
+
+        .code-keyword-purple-fullscreen {
+            color: #7c3aed !important;
+            font-weight: 700 !important;
+        }
+
+        .dark .code-keyword-purple-fullscreen {
+            color: #8b5cf6 !important;
+        }
+
+        .code-type-fullscreen {
+            color: #059669 !important;
+            font-weight: 600 !important;
+        }
+
+        .dark .code-type-fullscreen {
+            color: #10b981 !important;
+        }
+
+        .code-control-fullscreen {
+            color: #dc2626 !important;
+            font-weight: 600 !important;
+        }
+
+        .dark .code-control-fullscreen {
+            color: #ef4444 !important;
+        }
+
+        .code-boolean-fullscreen {
+            color: #ca8a04 !important;
+            font-weight: 600 !important;
+        }
+
+        .dark .code-boolean-fullscreen {
+            color: #f59e0b !important;
+        }
+
+        .code-number-fullscreen {
+            color: #be185d !important;
+            font-weight: 500 !important;
+        }
+
+        .dark .code-number-fullscreen {
+            color: #ec4899 !important;
+        }
+
+        .code-method-fullscreen {
+            color: #0891b2 !important;
+            font-weight: 500 !important;
+        }
+
+        .dark .code-method-fullscreen {
+            color: #06b6d4 !important;
+        }
+
+        /* Question text formatting classes */
+        .question-heading {
+            color: #2563eb !important;
+            font-size: 1.1em !important;
+            font-weight: 700 !important;
+        }
+
+        .dark .question-heading {
+            color: #60a5fa !important;
+        }
+
+        .question-keyword {
+            color: #059669 !important;
+            font-weight: 600 !important;
+        }
+
+        .dark .question-keyword {
+            color: #34d399 !important;
+        }
+
+        .question-code {
+            background: rgba(59, 130, 246, 0.1) !important;
+            color: #2563eb !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace !important;
+            font-size: 0.9em !important;
+            font-weight: 500 !important;
+        }
+
+        .dark .question-code {
+            background: rgba(96, 165, 250, 0.2) !important;
+            color: #93c5fd !important;
+        }
+
+        /* Explanation text formatting classes */
+        .explanation-heading {
+            color: #d97706 !important;
+            font-size: 1.1em !important;
+            font-weight: 700 !important;
+        }
+
+        .dark .explanation-heading {
+            color: #fbbf24 !important;
+        }
+
+        .explanation-complexity {
+            color: #dc2626 !important;
+            font-weight: 600 !important;
+        }
+
+        .dark .explanation-complexity {
+            color: #f87171 !important;
+        }
+
+        .explanation-step {
+            color: #7c3aed !important;
+            font-weight: 600 !important;
+        }
+
+        .dark .explanation-step {
+            color: #a78bfa !important;
+        }
+
+        .explanation-code {
+            background: rgba(217, 119, 6, 0.1) !important;
+            color: #d97706 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace !important;
+            font-size: 0.9em !important;
+            font-weight: 500 !important;
+        }
+
+        .dark .explanation-code {
+            background: rgba(251, 191, 36, 0.2) !important;
+            color: #fcd34d !important;
+        }
+
+        /* Fullscreen modal styles */
+        #fullscreen-modal {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Fullscreen modal theme adaptation */
+        #fullscreen-modal {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .dark #fullscreen-modal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Fullscreen header theme adaptation */
+        .fullscreen-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(16px);
+        }
+
+        .dark .fullscreen-header {
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fullscreen-header h2 {
+            color: #1e293b;
+        }
+
+        .dark .fullscreen-header h2 {
+            color: #f1f5f9;
+        }
+
+        .fullscreen-header button {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        .fullscreen-header button:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .dark .fullscreen-header button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+        }
+
+        .dark .fullscreen-header button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fullscreen language badge */
+        .fullscreen-language-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .dark .fullscreen-language-badge {
+            background: rgba(96, 165, 250, 0.2);
+            color: #93c5fd;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        #fullscreen-content {
+            line-height: 1.7;
+        }
+
+        /* Fullscreen content styling - Light Mode */
+        pre.fullscreen-question {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 2.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+            max-width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .dark pre.fullscreen-question {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        pre.fullscreen-code {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 16px;
+            padding: 2.5rem;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+            font-size: 1rem;
+            line-height: 1.6;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            color: #1e293b;
+            max-width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            white-space: pre;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .dark pre.fullscreen-code {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        pre.fullscreen-explanation {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-radius: 16px;
+            padding: 2.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+            max-width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .dark pre.fullscreen-explanation {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Make content sections clickable */
+        .content-clickable {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .content-clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-clickable:hover::after {
+            content: "🔍 Click to expand fullscreen";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            pointer-events: none;
+            z-index: 10;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        /* Fullscreen container alignment */
+        #fullscreen-content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100%;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        #fullscreen-content > div {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Fullscreen scrollbar styling - Light Mode */
+        #fullscreen-content::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        #fullscreen-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+        }
+
+        #fullscreen-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+        }
+
+        #fullscreen-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Dark mode scrollbar */
+        .dark #fullscreen-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark #fullscreen-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dark #fullscreen-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive fullscreen content */
+        @media (max-width: 768px) {
+            #fullscreen-content {
+                padding: 1rem;
+            }
+            
+            pre.fullscreen-question,
+            pre.fullscreen-code,
+            pre.fullscreen-explanation {
+                padding: 1.5rem;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -696,7 +1094,7 @@
                             </h3>
                         </div>
                         <div class="p-6 content-section">
-                            <div id="question-content" class="prose prose-sky dark:prose-invert max-w-none">
+                            <div id="question-content" class="prose prose-sky dark:prose-invert max-w-none content-clickable" onclick="openFullscreen('question')">
                                 <pre class="whitespace-pre-wrap leading-relaxed text-base question-content enhanced-text p-6 rounded-xl shadow-sm"></pre>
                             </div>
                         </div>
@@ -718,7 +1116,7 @@
                             </button>
                         </div>
                         <div class="p-0">
-                            <div id="code-content" class="relative">
+                            <div id="code-content" class="relative content-clickable" onclick="openFullscreen('code')">
                                 <pre id="code-pre" class="whitespace-pre font-mono text-sm leading-relaxed code-editor p-6 rounded-none rounded-b-xl overflow-x-auto shadow-inner font-medium code-scroll m-0 border-0"></pre>
                             </div>
                         </div>
@@ -733,7 +1131,7 @@
                             </h3>
                         </div>
                         <div class="p-6 content-section">
-                            <div id="explanation-content" class="prose prose-amber dark:prose-invert max-w-none">
+                            <div id="explanation-content" class="prose prose-amber dark:prose-invert max-w-none content-clickable" onclick="openFullscreen('explanation')">
                                 <pre class="whitespace-pre-wrap leading-relaxed text-base explanation-content enhanced-text p-6 rounded-xl shadow-sm"></pre>
                             </div>
                         </div>
@@ -772,6 +1170,41 @@
                         <span class="text-gray-600 dark:text-gray-300">Copy Code</span>
                         <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl + Shift + C</kbd>
                     </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Fullscreen View</span>
+                        <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Click Content</kbd>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fullscreen Content Modal -->
+        <div id="fullscreen-modal" class="fixed inset-0 backdrop-blur-sm z-[60] hidden" onclick="closeFullscreen()">
+            <div class="h-full flex flex-col" onclick="event.stopPropagation()">
+                <!-- Fullscreen Header -->
+                <div class="fullscreen-header flex items-center justify-between p-6">
+                    <div class="flex items-center gap-4">
+                        <span id="fullscreen-icon" class="text-2xl"></span>
+                        <h2 id="fullscreen-title" class="text-xl font-bold"></h2>
+                        <span id="fullscreen-language" class="px-3 py-1 text-sm rounded-full hidden fullscreen-language-badge"></span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="fullscreen-copy" onclick="copyFullscreenContent()" 
+                                class="hidden px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2">
+                            <span>📋</span>
+                            <span>Copy</span>
+                        </button>
+                        <button onclick="closeFullscreen()" 
+                                class="p-2 rounded-lg transition-all duration-300" 
+                                title="Close (Esc)">
+                            <span class="text-xl">×</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Fullscreen Content -->
+                <div class="flex-1 overflow-auto">
+                    <div id="fullscreen-content"></div>
                 </div>
             </div>
         </div>
@@ -973,9 +1406,9 @@
                 // Ensure code editor styling is applied and wait for DOM to be ready
                 setTimeout(() => {
                     codeContent.style.setProperty('background', 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 'important');
-                    codeContent.style.setProperty('color', '#e2e8f0', 'important');
                     codeContent.style.setProperty('border', '1px solid #374151', 'important');
                     codeContent.style.setProperty('font-family', '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", monospace', 'important');
+                    // Don't override color - let syntax highlighting classes handle colors
                 }, 100);
             });
             
@@ -1116,84 +1549,217 @@
             });
         }
 
-        function applySyntaxHighlighting(code, language) {
-            // Clean and simple syntax highlighting for Java
+        function applyFullscreenSyntaxHighlighting(code, language) {
             if (language.toLowerCase() === 'java') {
-                // First escape HTML entities in the raw code
-                let escapedCode = code
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;');
-                
-                // Process line by line to avoid HTML conflicts
-                const lines = escapedCode.split('\n');
-                const highlightedLines = lines.map(line => {
-                    let highlightedLine = line;
-                    
-                    // Comments (handle first to avoid conflicts)
-                    if (line.trim().startsWith('//')) {
-                        return `<span class="code-comment">${line}</span>`;
-                    }
-                    
-                    // Multi-line comments
-                    highlightedLine = highlightedLine.replace(/\/\*.*?\*\//g, '<span class="code-comment">$&</span>');
-                    
-                    // Strings (now with escaped quotes)
-                    highlightedLine = highlightedLine.replace(/&quot;([^&]*)&quot;/g, '<span class="code-string">&quot;$1&quot;</span>');
-                    
-                    // Keywords (access modifiers)
-                    highlightedLine = highlightedLine.replace(/\b(public|private|protected|static|final)\b/g, '<span class="code-keyword-blue">$1</span>');
-                    
-                    // Keywords (class/import)
-                    highlightedLine = highlightedLine.replace(/\b(class|interface|import|package|extends|implements)\b/g, '<span class="code-keyword-purple">$1</span>');
-                    
-                    // Data types
-                    highlightedLine = highlightedLine.replace(/\b(int|String|boolean|void|char|long|double|float|Integer|Boolean|Set|HashSet|List|ArrayList|Map|HashMap)\b/g, '<span class="code-type">$1</span>');
-                    
-                    // Control flow
-                    highlightedLine = highlightedLine.replace(/\b(if|else|for|while|return|new|this|try|catch|throw)\b/g, '<span class="code-control">$1</span>');
-                    
-                    // Boolean values
-                    highlightedLine = highlightedLine.replace(/\b(true|false|null)\b/g, '<span class="code-boolean">$1</span>');
-                    
-                    // Numbers
-                    highlightedLine = highlightedLine.replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>');
-                    
-                    // Method calls (simple pattern)
-                    highlightedLine = highlightedLine.replace(/(\w+)(\s*\()/g, '<span class="code-method">$1</span>$2');
-                    
-                    return highlightedLine;
-                });
-                
-                return highlightedLines.join('\n');
+                return tokenizeAndHighlightJava(code, true);
             }
             return escapeHTML(code);
+        }
+
+        function applySyntaxHighlighting(code, language) {
+            if (language.toLowerCase() === 'java') {
+                return tokenizeAndHighlightJava(code, false);
+            }
+            return escapeHTML(code);
+        }
+
+        function tokenizeAndHighlightJava(code, isFullscreen) {
+            // Clean approach: tokenize first, then apply highlighting
+            const suffix = isFullscreen ? '-fullscreen' : '';
+            
+            // First escape HTML entities
+            let escapedCode = code
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+
+            // Define token patterns in order of priority
+            const patterns = [
+                { type: 'comment', regex: /\/\/.*$/gm },
+                { type: 'comment', regex: /\/\*[\s\S]*?\*\//g },
+                { type: 'string', regex: /&quot;[^&quot;]*&quot;/g },
+                { type: 'keyword-blue', regex: /\b(public|private|protected|static|final)\b/g },
+                { type: 'keyword-purple', regex: /\b(class|interface|import|package|extends|implements)\b/g },
+                { type: 'type', regex: /\b(int|String|boolean|void|char|long|double|float|Integer|Boolean|Set|HashSet|List|ArrayList|Map|HashMap)\b/g },
+                { type: 'control', regex: /\b(if|else|for|while|return|new|this|try|catch|throw)\b/g },
+                { type: 'boolean', regex: /\b(true|false|null)\b/g },
+                { type: 'number', regex: /\b\d+\b/g },
+                { type: 'method', regex: /\b\w+(?=\s*\()/g }
+            ];
+
+            // Create a list of all tokens with their positions
+            let tokens = [];
+            
+            patterns.forEach(pattern => {
+                let match;
+                while ((match = pattern.regex.exec(escapedCode)) !== null) {
+                    tokens.push({
+                        type: pattern.type,
+                        value: match[0],
+                        start: match.index,
+                        end: match.index + match[0].length
+                    });
+                }
+                // Reset regex lastIndex for next pattern
+                pattern.regex.lastIndex = 0;
+            });
+
+            // Sort tokens by position and remove overlaps
+            tokens.sort((a, b) => a.start - b.start);
+            
+            // Remove overlapping tokens (keep first occurrence)
+            let cleanTokens = [];
+            let lastEnd = 0;
+            
+            tokens.forEach(token => {
+                if (token.start >= lastEnd) {
+                    cleanTokens.push(token);
+                    lastEnd = token.end;
+                }
+            });
+
+            // Build the highlighted string
+            let result = '';
+            let currentPos = 0;
+
+            cleanTokens.forEach(token => {
+                // Add any text before this token
+                if (token.start > currentPos) {
+                    result += escapedCode.substring(currentPos, token.start);
+                }
+                
+                // Add the highlighted token
+                result += `<span class="code-${token.type}${suffix}">${token.value}</span>`;
+                currentPos = token.end;
+            });
+
+            // Add any remaining text
+            if (currentPos < escapedCode.length) {
+                result += escapedCode.substring(currentPos);
+            }
+
+            return result;
         }
 
         function formatQuestionText(text) {
             // Enhanced formatting for question text
             return text
                 // Make headings bold
-                .replace(/^([A-Z][^:]+:)/gm, '<strong style="color: #1e40af; font-size: 1.1em;">$1</strong>')
+                .replace(/^([A-Z][^:]+:)/gm, '<strong class="question-heading">$1</strong>')
                 // Highlight constraints and examples
-                .replace(/\b(Input:|Output:|Example:|Constraints:|Note:)/gi, '<strong style="color: #059669;">$1</strong>')
+                .replace(/\b(Input:|Output:|Example:|Constraints:|Note:)/gi, '<strong class="question-keyword">$1</strong>')
                 // Format code snippets in questions
-                .replace(/`([^`]+)`/g, '<code style="background: rgba(59, 130, 246, 0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace; color: #1e40af;">$1</code>');
+                .replace(/`([^`]+)`/g, '<code class="question-code">$1</code>');
         }
 
         function formatExplanationText(text) {
             // Enhanced formatting for explanation text
             return text
                 // Make section headings bold and colored
-                .replace(/^([A-Z][^:]+:)/gm, '<strong style="color: #d97706; font-size: 1.1em;">$1</strong>')
+                .replace(/^([A-Z][^:]+:)/gm, '<strong class="explanation-heading">$1</strong>')
                 // Highlight time and space complexity
-                .replace(/(Time Complexity:|Space Complexity:)/gi, '<strong style="color: #dc2626;">$1</strong>')
+                .replace(/(Time Complexity:|Space Complexity:)/gi, '<strong class="explanation-complexity">$1</strong>')
                 // Format algorithm steps
-                .replace(/^\d+\./gm, '<strong style="color: #7c3aed;">$&</strong>')
+                .replace(/^\d+\./gm, '<strong class="explanation-step">$&</strong>')
                 // Format code references
-                .replace(/`([^`]+)`/g, '<code style="background: rgba(217, 119, 6, 0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace; color: #d97706;">$1</code>');
+                .replace(/`([^`]+)`/g, '<code class="explanation-code">$1</code>');
+        }
+
+        // Fullscreen functionality
+        let fullscreenContent = '';
+        let fullscreenType = '';
+
+        function openFullscreen(type) {
+            const modal = document.getElementById('fullscreen-modal');
+            const content = document.getElementById('fullscreen-content');
+            const title = document.getElementById('fullscreen-title');
+            const icon = document.getElementById('fullscreen-icon');
+            const languagebadge = document.getElementById('fullscreen-language');
+            const copyButton = document.getElementById('fullscreen-copy');
+            
+            fullscreenType = type;
+            
+            // Set title and icon based on content type
+            switch(type) {
+                case 'question':
+                    title.textContent = 'Problem Statement';
+                    icon.textContent = '📋';
+                    languagebadge.classList.add('hidden');
+                    copyButton.classList.add('hidden');
+                    break;
+                case 'code':
+                    title.textContent = 'Solution Code';
+                    icon.textContent = '💻';
+                    languagebadge.textContent = document.getElementById('code-language-display').textContent;
+                    languagebadge.classList.remove('hidden');
+                    copyButton.classList.remove('hidden');
+                    break;
+                case 'explanation':
+                    title.textContent = 'Explanation & Analysis';
+                    icon.textContent = '💡';
+                    languagebadge.classList.add('hidden');
+                    copyButton.classList.add('hidden');
+                    break;
+            }
+            
+            // Get content from the respective pane and preserve formatting
+            let sourceContent = '';
+            if (type === 'question') {
+                sourceContent = document.querySelector('#question-content pre').innerHTML;
+                content.innerHTML = `<pre class="fullscreen-question">${sourceContent}</pre>`;
+            } else if (type === 'code') {
+                // For code, get the original text and apply clean syntax highlighting
+                const codeText = document.querySelector('#code-pre').textContent;
+                const language = document.getElementById('code-language-display').textContent;
+                sourceContent = applyFullscreenSyntaxHighlighting(codeText, language);
+                content.innerHTML = `<pre class="fullscreen-code">${sourceContent}</pre>`;
+            } else if (type === 'explanation') {
+                sourceContent = document.querySelector('#explanation-content pre').innerHTML;
+                content.innerHTML = `<pre class="fullscreen-explanation">${sourceContent}</pre>`;
+            }
+            
+            fullscreenContent = sourceContent;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullscreen() {
+            const modal = document.getElementById('fullscreen-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            fullscreenContent = '';
+            fullscreenType = '';
+        }
+
+        function copyFullscreenContent() {
+            if (fullscreenType === 'code') {
+                // Get text content from the fullscreen pre element
+                const fullscreenPre = document.querySelector('pre.fullscreen-code');
+                const text = fullscreenPre ? fullscreenPre.textContent : '';
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    // Show feedback
+                    const copyBtn = document.getElementById('fullscreen-copy');
+                    const originalHTML = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<span>✅</span><span>Copied!</span>';
+                    copyBtn.classList.add('bg-green-500');
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalHTML;
+                        copyBtn.classList.remove('bg-green-500');
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                });
+            }
         }
 
         function toggleShortcutsHelp() {
@@ -1270,6 +1836,15 @@
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
+            // Handle fullscreen modal escape key
+            if (!document.getElementById('fullscreen-modal').classList.contains('hidden')) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeFullscreen();
+                }
+                return;
+            }
+            
             if (document.getElementById('detail-page').classList.contains('hidden')) return;
             
             switch(e.key) {
