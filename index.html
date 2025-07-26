@@ -14,6 +14,7 @@
                 extend: {
                     animation: {
                         'gradient': 'gradient 8s linear infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
                     },
                     keyframes: {
                         'gradient': {
@@ -25,6 +26,10 @@
                                 'background-size': '200% 200%',
                                 'background-position': 'right center'
                             }
+                        },
+                        'shimmer': {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
                         }
                     }
                 }
@@ -74,44 +79,46 @@
 
         /* Dark Mode Enhancements */
         .dark .text-enhancement {
-            color: #e5e7eb;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            color: #f1f5f9;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .dark .heading-enhancement {
-            color: #f3f4f6;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            color: #f8fafc;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         .dark .text-muted {
-            color: #9ca3af;
+            color: #94a3b8;
         }
 
-        /* Glass Effects */
+        /* Modern Glass Effects */
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(240, 249, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.1);
             transform: translateZ(0);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass-effect:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(240, 249, 255, 0.8);
             transform: translateY(-2px) translateZ(0);
+            border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
         .dark .glass-effect {
-            background: rgba(17, 24, 39, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(6, 182, 212, 0.1);
         }
 
         .dark .glass-effect:hover {
-            background: rgba(17, 24, 39, 0.7);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(6, 182, 212, 0.2);
         }
 
-        /* Card Effects */
+        /* Enhanced Card Effects */
         .card-3d {
             transform-style: preserve-3d;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -120,41 +127,46 @@
         }
 
         .card-3d:hover {
-            transform: translateY(-5px) rotateX(2deg) rotateY(2deg) translateZ(0);
+            transform: translateY(-5px) rotateX(1deg) rotateY(1deg) translateZ(0);
             box-shadow: 
-                0 20px 30px -10px rgba(0, 0, 0, 0.2),
-                0 5px 15px -5px rgba(0, 0, 0, 0.1);
+                0 25px 50px -12px rgba(14, 165, 233, 0.15),
+                0 8px 16px -4px rgba(14, 165, 233, 0.1);
         }
 
         .dark .card-3d:hover {
             box-shadow: 
-                0 20px 30px -10px rgba(0, 0, 0, 0.4),
-                0 5px 15px -5px rgba(0, 0, 0, 0.2);
+                0 25px 50px -12px rgba(6, 182, 212, 0.2),
+                0 8px 16px -4px rgba(6, 182, 212, 0.1);
         }
 
         .card-hover {
             transition: all 0.3s ease;
+            background: rgba(254, 254, 254, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(14, 165, 233, 0.1);
         }
 
         .dark .card-hover {
-            background: rgba(17, 24, 39, 0.7);
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(6, 182, 212, 0.1);
         }
 
         .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -8px rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(14, 165, 233, 0.2);
         }
 
         .dark .card-hover:hover {
-            background: rgba(17, 24, 39, 0.8);
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 20px 40px -8px rgba(6, 182, 212, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.2);
         }
 
-        /* Animations */
+        /* Modern Animations */
         .animate-fade-in {
             animation: enhanced-fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -190,31 +202,36 @@
             animation: pulse-subtle 2s ease-in-out infinite;
         }
 
-        /* Interactive Elements */
+        /* Enhanced Interactive Elements */
         .button-3d {
             transform: translateZ(0);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
         .button-3d:hover {
             transform: translateY(-2px) translateZ(0);
-            box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 12px 24px -6px rgba(6, 182, 212, 0.4);
         }
 
         .button-3d:active {
             transform: translateY(0) translateZ(0);
-            box-shadow: 0 5px 10px -5px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 6px 12px -3px rgba(6, 182, 212, 0.3);
         }
 
-        /* Progress Bar */
+        /* Modern Progress Bar */
         .progress-animate {
             transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-            background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+            background: linear-gradient(90deg, #06b6d4 0%, #0ea5e9 50%, #3b82f6 100%);
             background-size: 200% 200%;
-            animation: gradient 2s ease infinite;
+            animation: gradient 3s ease infinite;
             transform: translateZ(0);
-            box-shadow: 0 2px 10px -2px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 3px 12px -2px rgba(6, 182, 212, 0.4);
+        }
+
+        .dark .progress-animate {
+            background: linear-gradient(90deg, #06b6d4 0%, #0ea5e9 50%, #3b82f6 100%);
+            box-shadow: 0 3px 12px -2px rgba(6, 182, 212, 0.6);
         }
 
         @keyframes gradient {
@@ -223,13 +240,13 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Form Elements */
+        /* Enhanced Form Elements */
         .custom-checkbox {
             appearance: none;
             width: 1.2em;
             height: 1.2em;
-            border: 2px solid #6366f1;
-            border-radius: 4px;
+            border: 2px solid #0ea5e9;
+            border-radius: 6px;
             margin-right: 0.5em;
             position: relative;
             cursor: pointer;
@@ -238,18 +255,27 @@
         }
 
         .custom-checkbox:checked {
-            background-color: #6366f1;
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
             animation: checkmark-3d 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px -2px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 3px 10px -2px rgba(6, 182, 212, 0.5);
+        }
+
+        .dark .custom-checkbox {
+            border-color: #06b6d4;
+        }
+
+        .dark .custom-checkbox:checked {
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+            box-shadow: 0 3px 10px -2px rgba(6, 182, 212, 0.6);
         }
 
         @keyframes checkmark-3d {
             0% { transform: scale(1) translateZ(0); }
-            50% { transform: scale(1.2) translateZ(10px); }
+            50% { transform: scale(1.15) translateZ(10px); }
             100% { transform: scale(1) translateZ(0); }
         }
 
-        /* Table Styles */
+        /* Enhanced Table Styles */
         tbody tr {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform: translateZ(0);
@@ -257,16 +283,16 @@
 
         tbody tr:hover {
             transform: translateX(5px) translateZ(0);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: -5px 0 10px -5px rgba(0, 0, 0, 0.1);
+            background: rgba(240, 249, 255, 0.8);
+            box-shadow: -5px 0 15px -5px rgba(14, 165, 233, 0.2);
         }
 
         .dark tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: -5px 0 10px -5px rgba(0, 0, 0, 0.2);
+            background: rgba(6, 182, 212, 0.1);
+            box-shadow: -5px 0 15px -5px rgba(6, 182, 212, 0.3);
         }
 
-        /* Loading Effects */
+        /* Modern Loading Effects */
         @keyframes shimmer {
             0% { background-position: -1000px 0; }
             100% { background-position: 1000px 0; }
@@ -275,24 +301,227 @@
         .loading-shimmer {
             background: linear-gradient(
                 90deg,
-                rgba(255, 255, 255, 0.1),
-                rgba(255, 255, 255, 0.2),
-                rgba(255, 255, 255, 0.1)
+                rgba(240, 249, 255, 0.1),
+                rgba(240, 249, 255, 0.3),
+                rgba(240, 249, 255, 0.1)
             );
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
+
+        .dark .loading-shimmer {
+            background: linear-gradient(
+                90deg,
+                rgba(6, 182, 212, 0.1),
+                rgba(6, 182, 212, 0.2),
+                rgba(6, 182, 212, 0.1)
+            );
+        }
+
+        /* Enhanced focus states */
+        .focus-ring:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #06b6d4;
+            ring-offset: 2px;
+        }
+
+        .dark .focus-ring:focus {
+            ring-color: #06b6d4;
+        }
+
+        /* Enhanced content styling */
+        .content-section {
+            transition: all 0.3s ease;
+        }
+
+        .content-section pre {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+            line-height: 1.6;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        /* Code editor styling */
+        .code-editor {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            border: 1px solid #374151 !important;
+            color: #e2e8f0 !important;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .code-editor {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%) !important;
+            border: 1px solid #1f2937 !important;
+            color: #f1f5f9 !important;
+        }
+
+        .light .code-editor {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            color: #e2e8f0 !important;
+        }
+
+        /* Question content styling */
+        .question-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .question-content {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 1px solid #475569;
+            color: #f1f5f9;
+        }
+
+        /* Explanation content styling */
+        .explanation-content {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #fde68a;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .explanation-content {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 1px solid #475569;
+            color: #f1f5f9;
+        }
+
+        /* Improved typography */
+        .enhanced-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            letter-spacing: 0.025em;
+        }
+
+        /* Code highlighting improvements */
+        .syntax-highlighted {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Scrollbar styling for code blocks */
+        .code-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .code-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .code-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .code-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Force code editor styling */
+        #code-pre {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            color: #e2e8f0 !important;
+            border: 1px solid #374151 !important;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            padding: 24px !important;
+            margin: 0 !important;
+            border-radius: 0 0 12px 12px !important;
+        }
+
+        .dark #code-pre {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%) !important;
+            color: #f1f5f9 !important;
+            border: 1px solid #1f2937 !important;
+        }
+
+        /* Code syntax span styling */
+        #code-pre span {
+            font-family: inherit !important;
+        }
+
+        /* Ensure code container has no conflicting styles */
+        #code-content {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Syntax highlighting classes */
+        .code-comment {
+            color: #6b7280 !important;
+            font-style: italic !important;
+            opacity: 0.9 !important;
+        }
+
+        .code-string {
+            color: #fbbf24 !important;
+            font-weight: 500 !important;
+        }
+
+        .code-keyword-blue {
+            color: #3b82f6 !important;
+            font-weight: 700 !important;
+        }
+
+        .code-keyword-purple {
+            color: #8b5cf6 !important;
+            font-weight: 700 !important;
+        }
+
+        .code-type {
+            color: #10b981 !important;
+            font-weight: 600 !important;
+        }
+
+        .code-control {
+            color: #ef4444 !important;
+            font-weight: 600 !important;
+        }
+
+        .code-boolean {
+            color: #f59e0b !important;
+            font-weight: 600 !important;
+        }
+
+        .code-number {
+            color: #ec4899 !important;
+            font-weight: 500 !important;
+        }
+
+        .code-method {
+            color: #06b6d4 !important;
+            font-weight: 500 !important;
+        }
+
+        /* Ensure all syntax spans inherit font family */
+        #code-pre .code-comment,
+        #code-pre .code-string,
+        #code-pre .code-keyword-blue,
+        #code-pre .code-keyword-purple,
+        #code-pre .code-type,
+        #code-pre .code-control,
+        #code-pre .code-boolean,
+        #code-pre .code-number,
+        #code-pre .code-method {
+            font-family: inherit !important;
+        }
     </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+<body class="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-500">
     <!-- Header -->
     <header class="fixed top-0 left-0 w-full glass-effect z-10 px-6 py-4">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 dark:from-indigo-200 dark:to-purple-200 text-transparent bg-clip-text animate-gradient heading-enhancement">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-500 dark:from-cyan-400 dark:via-sky-300 dark:to-cyan-300 text-transparent bg-clip-text animate-gradient heading-enhancement">
                 XYZ
             </h1>
-            <button class="bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 rounded-lg text-white shadow-lg hover:shadow-xl transition-all duration-300 button-3d" 
+            <button class="bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-600 dark:from-cyan-500 dark:via-sky-400 dark:to-cyan-400 px-4 py-2 rounded-xl text-white shadow-lg hover:shadow-xl transition-all duration-300 button-3d focus-ring" 
                     onclick="toggleDarkMode()">
                 🌓
             </button>
@@ -303,49 +532,49 @@
     <main class="pt-24 px-4 max-w-6xl mx-auto space-y-8 min-h-screen pb-24">
         <!-- List Page -->
         <div id="list-page" class="page animate-fade-in">
-            <h2 class="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo-500 to-purple-500 dark:from-indigo-300 dark:to-purple-300 text-transparent bg-clip-text heading-enhancement">
+            <h2 class="text-3xl font-bold mb-8 bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-500 dark:from-cyan-400 dark:via-sky-300 dark:to-cyan-300 text-transparent bg-clip-text heading-enhancement">
                 ABC...
             </h2>
 
             <!-- Progress Section -->
-            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg card-hover card-3d mb-8">
+            <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-6 shadow-lg card-hover card-3d mb-8 border border-sky-100 dark:border-cyan-800">
                 <div class="flex items-center justify-between mb-3">
-                    <label class="font-semibold text-lg text-enhancement">Progress</label>
+                    <label class="font-semibold text-lg text-sky-800 dark:text-cyan-200 text-enhancement">Progress</label>
                     <button onclick="resetProgress()" 
-                            class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-300 button-3d">
+                            class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-300 button-3d focus-ring">
                         Reset Progress
                     </button>
                 </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+                <div class="w-full bg-sky-100 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
                     <div id="progress-slider" class="progress-animate h-4 rounded-full"></div>
                 </div>
-                <p id="progress-text" class="text-sm mt-2 text-gray-600 dark:text-gray-300"></p>
+                <p id="progress-text" class="text-sm mt-2 text-sky-600 dark:text-cyan-300"></p>
             </div>
 
             <!-- Filters Section -->
-            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg card-hover card-3d mb-8">
+            <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-6 shadow-lg card-hover card-3d mb-8 border border-sky-100 dark:border-cyan-800">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="space-y-2">
-                        <label class="font-semibold text-gray-700 dark:text-gray-200">Topic</label>
+                        <label class="font-semibold text-sky-700 dark:text-cyan-200">Topic</label>
                         <select id="topic-filter" onchange="renderTable()"
-                                class="w-full rounded-lg p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 transition-all">
+                                class="w-full rounded-xl p-3 border border-sky-200 dark:border-cyan-700 bg-white dark:bg-slate-800 text-sky-800 dark:text-cyan-100 focus:ring-2 focus:ring-sky-500 dark:focus:ring-cyan-400 transition-all focus-ring">
                         </select>
                     </div>
                     <div class="space-y-2">
-                        <label class="font-semibold text-gray-700 dark:text-gray-200">Difficulty</label>
+                        <label class="font-semibold text-sky-700 dark:text-cyan-200">Difficulty</label>
                         <select id="difficulty-filter" onchange="renderTable()"
-                                class="w-full rounded-lg p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 transition-all">
+                                class="w-full rounded-xl p-3 border border-sky-200 dark:border-cyan-700 bg-white dark:bg-slate-800 text-sky-800 dark:text-cyan-100 focus:ring-2 focus:ring-sky-500 dark:focus:ring-cyan-400 transition-all focus-ring">
                         </select>
                     </div>
                     <div class="space-y-2">
-                        <label class="font-semibold text-gray-700 dark:text-gray-200">List</label>
+                        <label class="font-semibold text-sky-700 dark:text-cyan-200">List</label>
                         <select id="list-filter" onchange="renderTable()"
-                                class="w-full rounded-lg p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 transition-all">
+                                class="w-full rounded-xl p-3 border border-sky-200 dark:border-cyan-700 bg-white dark:bg-slate-800 text-sky-800 dark:text-cyan-100 focus:ring-2 focus:ring-sky-500 dark:focus:ring-cyan-400 transition-all focus-ring">
                         </select>
                     </div>
                     <div class="flex items-end">
                         <button onclick="resetFilters()" 
-                                class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-300 button-3d">
+                                class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-300 button-3d focus-ring">
                             Reset Filters
                         </button>
                     </div>
@@ -353,19 +582,19 @@
             </div>
 
             <!-- Questions Table -->
-            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg card-hover card-3d overflow-hidden">
+            <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-lg card-hover card-3d overflow-hidden border border-sky-100 dark:border-cyan-800">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-gray-50 dark:bg-gray-800">
+                        <thead class="bg-sky-50 dark:bg-slate-800 border-b border-sky-100 dark:border-cyan-700">
                             <tr>
-                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Status</th>
-                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Topic</th>
-                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Question</th>
-                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">Difficulty</th>
-                                <th class="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-200">List</th>
+                                <th class="px-6 py-4 text-left font-semibold text-sky-700 dark:text-cyan-200">Status</th>
+                                <th class="px-6 py-4 text-left font-semibold text-sky-700 dark:text-cyan-200">Topic</th>
+                                <th class="px-6 py-4 text-left font-semibold text-sky-700 dark:text-cyan-200">Question</th>
+                                <th class="px-6 py-4 text-left font-semibold text-sky-700 dark:text-cyan-200">Difficulty</th>
+                                <th class="px-6 py-4 text-left font-semibold text-sky-700 dark:text-cyan-200">List</th>
                             </tr>
                         </thead>
-                        <tbody id="question-table-body" class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody id="question-table-body" class="divide-y divide-sky-100 dark:divide-cyan-700">
                         </tbody>
                     </table>
                 </div>
@@ -374,52 +603,174 @@
 
         <!-- Detail Page -->
         <div id="detail-page" class="hidden space-y-6 animate-fade-in">
-            <button class="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 rounded-lg text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 button-3d" 
-                    onclick="goBack()">
-                <span class="text-lg">←</span>
-                <span>Back</span>
-            </button>
+            <!-- Navigation Header -->
+            <div class="flex justify-between items-center">
+                <button class="bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-600 dark:from-cyan-500 dark:via-sky-400 dark:to-cyan-400 px-6 py-3 rounded-xl text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 button-3d focus-ring" 
+                        onclick="goBack()">
+                    <span class="text-lg">←</span>
+                    <span>Back to List</span>
+                </button>
+                
+                <!-- Question Navigation -->
+                <div class="flex items-center gap-3">
+                    <button id="prev-question" onclick="navigateQuestion(-1)" 
+                            class="p-2 rounded-lg bg-sky-100 dark:bg-slate-700 text-sky-600 dark:text-cyan-400 hover:bg-sky-200 dark:hover:bg-slate-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Previous question (Ctrl+←)">
+                        <span class="text-lg">◀</span>
+                    </button>
+                    <span id="question-counter" class="text-sm font-medium text-sky-600 dark:text-cyan-400 px-3"></span>
+                    <button id="next-question" onclick="navigateQuestion(1)" 
+                            class="p-2 rounded-lg bg-sky-100 dark:bg-slate-700 text-sky-600 dark:text-cyan-400 hover:bg-sky-200 dark:hover:bg-slate-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Next question (Ctrl+→)">
+                        <span class="text-lg">▶</span>
+                    </button>
+                    <button onclick="toggleShortcutsHelp()" 
+                            class="p-2 rounded-lg bg-sky-100 dark:bg-slate-700 text-sky-600 dark:text-cyan-400 hover:bg-sky-200 dark:hover:bg-slate-600 transition-all duration-300"
+                            title="Keyboard shortcuts">
+                        <span>⌨️</span>
+                    </button>
+                </div>
+            </div>
 
-            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg card-hover card-3d">
-                <div class="flex justify-between items-center mb-6">
-                    <span id="question-title" class="text-2xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 dark:from-indigo-200 dark:to-purple-200 text-transparent bg-clip-text heading-enhancement"></span>
-                    <a id="external-link" href="#" target="_blank" 
-                       class="text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors duration-300 text-lg">
-                        🔗
-                    </a>
+            <!-- Question Header Card -->
+            <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-6 shadow-lg card-hover card-3d border border-sky-100 dark:border-cyan-800">
+                <!-- Title and External Link -->
+                <div class="flex justify-between items-start mb-4">
+                    <h1 id="question-title" class="text-3xl font-bold bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-500 dark:from-cyan-400 dark:via-sky-300 dark:to-cyan-300 text-transparent bg-clip-text heading-enhancement flex-1"></h1>
+                    <div class="flex items-center gap-3 ml-4">
+                        <button id="bookmark-btn" onclick="toggleBookmark()" 
+                                class="p-2 rounded-lg bg-sky-100 dark:bg-slate-700 text-sky-600 dark:text-cyan-400 hover:bg-sky-200 dark:hover:bg-slate-600 transition-all duration-300"
+                                title="Bookmark this question (Ctrl+B)">
+                            <span id="bookmark-icon">🔖</span>
+                        </button>
+                        <a id="external-link" href="#" target="_blank" 
+                           class="p-2 rounded-lg bg-sky-100 dark:bg-slate-700 text-sky-600 dark:text-cyan-400 hover:bg-sky-200 dark:hover:bg-slate-600 transition-all duration-300"
+                           title="Open original problem">
+                            🔗
+                        </a>
+                    </div>
                 </div>
 
-                <div class="flex flex-wrap gap-6 mb-6">
-                    <label class="flex items-center cursor-pointer text-gray-800 dark:text-gray-200">
+                <!-- Metadata Badges -->
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span id="difficulty-badge" class="px-3 py-1 rounded-full text-sm font-medium"></span>
+                    <span id="topic-badge" class="px-3 py-1 rounded-full text-sm font-medium bg-sky-100 dark:bg-slate-700 text-sky-700 dark:text-cyan-300"></span>
+                    <span id="language-badge" class="px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300"></span>
+                    <span id="completion-badge" class="px-3 py-1 rounded-full text-sm font-medium hidden"></span>
+                    <div id="tags-container" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- View Controls -->
+                <div class="flex flex-wrap gap-6 mb-6 p-4 bg-sky-50 dark:bg-slate-800 rounded-xl">
+                    <label class="flex items-center cursor-pointer text-sky-800 dark:text-cyan-200 hover:text-sky-600 dark:hover:text-cyan-100 transition-colors">
                         <input type="checkbox" checked onchange="togglePane('question')" class="custom-checkbox">
-                        <span>Question</span>
+                        <span class="flex items-center gap-2">
+                            <span>📋</span>
+                            <span>Question</span>
+                        </span>
                     </label>
-                    <label class="flex items-center cursor-pointer text-gray-800 dark:text-gray-200">
+                    <label class="flex items-center cursor-pointer text-sky-800 dark:text-cyan-200 hover:text-sky-600 dark:hover:text-cyan-100 transition-colors">
                         <input type="checkbox" onchange="togglePane('code')" class="custom-checkbox">
-                        <span>Code</span>
+                        <span class="flex items-center gap-2">
+                            <span>💻</span>
+                            <span>Code</span>
+                        </span>
                     </label>
-                    <label class="flex items-center cursor-pointer text-gray-800 dark:text-gray-200">
+                    <label class="flex items-center cursor-pointer text-sky-800 dark:text-cyan-200 hover:text-sky-600 dark:hover:text-cyan-100 transition-colors">
                         <input type="checkbox" onchange="togglePane('explanation')" class="custom-checkbox">
-                        <span>Explanation</span>
+                        <span class="flex items-center gap-2">
+                            <span>💡</span>
+                            <span>Explanation</span>
+                        </span>
                     </label>
-                </div>                <!-- Content Grid -->
-                <div id="content-grid" class="flex flex-col md:flex-row gap-4 min-h-[300px]">
-                    <div id="pane-question" class="split-pane full-width transform transition-all duration-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700">
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
-                            <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-100"></pre>
+                </div>
+
+                <!-- Content Grid -->
+                <div id="content-grid" class="flex flex-col lg:flex-row gap-6 min-h-[400px]">
+                    <!-- Question Pane -->
+                    <div id="pane-question" class="split-pane full-width transform transition-all duration-300 bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg hover:shadow-xl border border-sky-100 dark:border-cyan-700">
+                        <div class="flex items-center justify-between p-4 border-b border-sky-100 dark:border-cyan-700">
+                            <h3 class="font-semibold text-sky-700 dark:text-cyan-300 flex items-center gap-2">
+                                <span>📋</span>
+                                <span>Problem Statement</span>
+                            </h3>
+                        </div>
+                        <div class="p-6 content-section">
+                            <div id="question-content" class="prose prose-sky dark:prose-invert max-w-none">
+                                <pre class="whitespace-pre-wrap leading-relaxed text-base question-content enhanced-text p-6 rounded-xl shadow-sm"></pre>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="pane-code" class="split-pane hidden transform transition-all duration-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700">
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
-                            <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-100"></pre>
+                    <!-- Code Pane -->
+                    <div id="pane-code" class="split-pane hidden transform transition-all duration-300 bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg hover:shadow-xl border border-sky-100 dark:border-cyan-700">
+                        <div class="flex items-center justify-between p-4 border-b border-sky-100 dark:border-cyan-700 bg-slate-100 dark:bg-slate-800">
+                            <h3 class="font-semibold text-sky-700 dark:text-cyan-300 flex items-center gap-2">
+                                <span>💻</span>
+                                <span>Solution Code</span>
+                                <span id="code-language-display" class="text-xs px-2 py-1 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300"></span>
+                            </h3>
+                            <button onclick="copyCode()" 
+                                    class="flex items-center gap-2 px-3 py-1 text-xs bg-sky-100 dark:bg-slate-700 text-sky-600 dark:text-cyan-400 rounded-lg hover:bg-sky-200 dark:hover:bg-slate-600 transition-all"
+                                    title="Copy code to clipboard (Ctrl+Shift+C)">
+                                <span>📋</span>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                        <div class="p-0">
+                            <div id="code-content" class="relative">
+                                <pre id="code-pre" class="whitespace-pre font-mono text-sm leading-relaxed code-editor p-6 rounded-none rounded-b-xl overflow-x-auto shadow-inner font-medium code-scroll m-0 border-0"></pre>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="pane-explanation" class="split-pane hidden transform transition-all duration-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700">
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
-                            <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-100"></pre>
+                    <!-- Explanation Pane -->
+                    <div id="pane-explanation" class="split-pane hidden transform transition-all duration-300 bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg hover:shadow-xl border border-sky-100 dark:border-cyan-700">
+                        <div class="flex items-center justify-between p-4 border-b border-sky-100 dark:border-cyan-700">
+                            <h3 class="font-semibold text-sky-700 dark:text-cyan-300 flex items-center gap-2">
+                                <span>💡</span>
+                                <span>Explanation & Analysis</span>
+                            </h3>
                         </div>
+                        <div class="p-6 content-section">
+                            <div id="explanation-content" class="prose prose-amber dark:prose-invert max-w-none">
+                                <pre class="whitespace-pre-wrap leading-relaxed text-base explanation-content enhanced-text p-6 rounded-xl shadow-sm"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Help Modal -->
+        <div id="shortcuts-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-sky-800 dark:text-cyan-200">⌨️ Keyboard Shortcuts</h3>
+                    <button onclick="toggleShortcutsHelp()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <span class="text-xl">×</span>
+                    </button>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Navigate Previous</span>
+                        <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl + ←</kbd>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Navigate Next</span>
+                        <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl + →</kbd>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Back to List</span>
+                        <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Esc</kbd>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Toggle Bookmark</span>
+                        <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl + B</kbd>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Copy Code</span>
+                        <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl + Shift + C</kbd>
                     </div>
                 </div>
             </div>
@@ -427,15 +778,15 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full py-12 px-4 mt-auto bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+    <footer class="w-full py-12 px-4 mt-auto bg-white/90 dark:bg-slate-900/90 border-t border-sky-100 dark:border-cyan-800">
         <div class="max-w-6xl mx-auto">
             <div class="flex flex-col items-center space-y-4">
-                <div class="flex space-x-4 text-gray-600 dark:text-gray-400">
+                <div class="flex space-x-4 text-sky-600 dark:text-cyan-400">
                     <span>© 2025</span>
-                    <span class="text-gray-400 dark:text-gray-600">|</span>
+                    <span class="text-sky-400 dark:text-cyan-600">|</span>
                     <span>All rights reserved</span>
                 </div>
-                <div class="text-sm text-gray-500 dark:text-gray-500">
+                <div class="text-sm text-sky-500 dark:text-cyan-500">
                     Made with ❤️ for learners
                 </div>
             </div>
@@ -558,7 +909,7 @@
                 const id = `q-${idx}`;
                 const checked = statusMap[id] || false;
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-800 dark:text-gray-200";
+                tr.className = "hover:bg-sky-50 dark:hover:bg-cyan-900/20 cursor-pointer text-sky-800 dark:text-cyan-200";
                 tr.innerHTML = `
                     <td class="px-4 py-2">
                         <input type="checkbox" class="status-checkbox custom-checkbox" data-id="${id}" ${checked ? 'checked' : ''} onclick="event.stopPropagation();">
@@ -566,7 +917,7 @@
                     <td class="px-4 py-2 font-medium">${item.topic}</td>
                     <td class="px-4 py-2">${item["question header"]}</td>
                     <td class="px-4 py-2 font-medium">${item.difficulty}</td>
-                    <td class="px-4 py-2 text-gray-600 dark:text-gray-300">${item.lists || ''}</td>
+                    <td class="px-4 py-2 text-sky-600 dark:text-cyan-300">${item.lists || ''}</td>
                 `;
                 tr.addEventListener('click', () => showDetail(idx));
                 tbody.appendChild(tr);
@@ -584,16 +935,56 @@
             updateProgress();
         }
 
+        // Global variables for detail view
+        let currentQuestionIndex = 0;
+        let bookmarkedQuestions = JSON.parse(localStorage.getItem('bookmarkedQuestions') || '[]');
+
         // Detail View Functions
         function showDetail(index) {
+            currentQuestionIndex = index;
             const item = data[index];
+            
+            // Update basic info
             document.getElementById('question-title').textContent = item["question header"];
             document.getElementById('external-link').href = item["problem link"];
+            
+            // Update metadata badges
+            updateMetadataBadges(item);
+            
+            // Update navigation
+            updateNavigationButtons();
+            
+            // Update bookmark status
+            updateBookmarkButton();
+            
+            // Load content with enhanced formatting
+            fetchText(item.question).then(t => {
+                const questionPre = document.querySelector('#question-content pre');
+                questionPre.innerHTML = formatQuestionText(escapeHTML(t));
+            });
+            
+            fetchText(item.code).then(t => {
+                const codeContent = document.querySelector('#code-pre');
+                // Apply syntax highlighting (which handles HTML escaping internally)
+                const highlightedCode = applySyntaxHighlighting(t, item["code language"]);
+                codeContent.innerHTML = highlightedCode;
+                document.getElementById('code-language-display').textContent = item["code language"];
+                
+                // Ensure code editor styling is applied and wait for DOM to be ready
+                setTimeout(() => {
+                    codeContent.style.setProperty('background', 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 'important');
+                    codeContent.style.setProperty('color', '#e2e8f0', 'important');
+                    codeContent.style.setProperty('border', '1px solid #374151', 'important');
+                    codeContent.style.setProperty('font-family', '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", monospace', 'important');
+                }, 100);
+            });
+            
+            fetchText(item.explanation).then(t => {
+                const explanationPre = document.querySelector('#explanation-content pre');
+                explanationPre.innerHTML = formatExplanationText(escapeHTML(t));
+            });
 
-            fetchText(item.question).then(t => document.querySelector('#pane-question pre').innerHTML = escapeHTML(t));
-            fetchText(item.code).then(t => document.querySelector('#pane-code pre').innerHTML = `// Language: ${item["code language"]}\n` + escapeHTML(t));
-            fetchText(item.explanation).then(t => document.querySelector('#pane-explanation pre').innerHTML = escapeHTML(t));
-
+            // Reset view controls
             document.querySelector("input[onchange*=question]").checked = true;
             document.querySelector("input[onchange*=code]").checked = false;
             document.querySelector("input[onchange*=explanation]").checked = false;
@@ -604,6 +995,210 @@
 
             document.getElementById('list-page').classList.add('hidden');
             document.getElementById('detail-page').classList.remove('hidden');
+        }
+
+        function updateMetadataBadges(item) {
+            // Difficulty badge
+            const difficultyBadge = document.getElementById('difficulty-badge');
+            const difficulty = item.difficulty.toLowerCase();
+            difficultyBadge.textContent = item.difficulty;
+            difficultyBadge.className = `px-3 py-1 rounded-full text-sm font-medium ${getDifficultyClasses(difficulty)}`;
+            
+            // Topic badge
+            document.getElementById('topic-badge').textContent = item.topic;
+            
+            // Language badge
+            document.getElementById('language-badge').textContent = item["code language"];
+            
+            // Completion status
+            const completionBadge = document.getElementById('completion-badge');
+            const statusMap = getStatusMap();
+            const questionId = `q-${currentQuestionIndex}`;
+            if (statusMap[questionId]) {
+                completionBadge.textContent = '✅ Completed';
+                completionBadge.className = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300';
+                completionBadge.classList.remove('hidden');
+            } else {
+                completionBadge.classList.add('hidden');
+            }
+            
+            // Tags
+            const tagsContainer = document.getElementById('tags-container');
+            tagsContainer.innerHTML = '';
+            if (item.lists) {
+                const tags = item.lists.split('|').map(tag => tag.trim());
+                tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'px-2 py-1 text-xs rounded-full bg-cyan-100 dark:bg-cyan-900 text-cyan-700 dark:text-cyan-300';
+                    tagElement.textContent = tag;
+                    tagsContainer.appendChild(tagElement);
+                });
+            }
+        }
+
+        function getDifficultyClasses(difficulty) {
+            switch(difficulty) {
+                case 'easy': return 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300';
+                case 'medium': return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300';
+                case 'hard': return 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300';
+                default: return 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300';
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-question');
+            const nextBtn = document.getElementById('next-question');
+            const counter = document.getElementById('question-counter');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === data.length - 1;
+            counter.textContent = `${currentQuestionIndex + 1} of ${data.length}`;
+        }
+
+        function navigateQuestion(direction) {
+            const newIndex = currentQuestionIndex + direction;
+            if (newIndex >= 0 && newIndex < data.length) {
+                showDetail(newIndex);
+            }
+        }
+
+        function updateBookmarkButton() {
+            const bookmarkBtn = document.getElementById('bookmark-btn');
+            const bookmarkIcon = document.getElementById('bookmark-icon');
+            const questionId = `q-${currentQuestionIndex}`;
+            
+            if (bookmarkedQuestions.includes(questionId)) {
+                bookmarkIcon.textContent = '🔖';
+                bookmarkBtn.classList.add('bg-yellow-100', 'dark:bg-yellow-900', 'text-yellow-600', 'dark:text-yellow-400');
+            } else {
+                bookmarkIcon.textContent = '🔖';
+                bookmarkBtn.classList.remove('bg-yellow-100', 'dark:bg-yellow-900', 'text-yellow-600', 'dark:text-yellow-400');
+            }
+        }
+
+        function toggleBookmark() {
+            const questionId = `q-${currentQuestionIndex}`;
+            const index = bookmarkedQuestions.indexOf(questionId);
+            
+            if (index > -1) {
+                bookmarkedQuestions.splice(index, 1);
+            } else {
+                bookmarkedQuestions.push(questionId);
+            }
+            
+            localStorage.setItem('bookmarkedQuestions', JSON.stringify(bookmarkedQuestions));
+            updateBookmarkButton();
+        }
+
+        function copyCode() {
+            const codeElement = document.querySelector('#code-pre');
+            const text = codeElement.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                const copyBtn = document.querySelector('button[onclick="copyCode()"]');
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<span>✅</span><span>Copied!</span>';
+                copyBtn.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-600', 'dark:text-green-400');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.classList.remove('bg-green-100', 'dark:bg-green-900', 'text-green-600', 'dark:text-green-400');
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            });
+        }
+
+        function applySyntaxHighlighting(code, language) {
+            // Clean and simple syntax highlighting for Java
+            if (language.toLowerCase() === 'java') {
+                // First escape HTML entities in the raw code
+                let escapedCode = code
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+                
+                // Process line by line to avoid HTML conflicts
+                const lines = escapedCode.split('\n');
+                const highlightedLines = lines.map(line => {
+                    let highlightedLine = line;
+                    
+                    // Comments (handle first to avoid conflicts)
+                    if (line.trim().startsWith('//')) {
+                        return `<span class="code-comment">${line}</span>`;
+                    }
+                    
+                    // Multi-line comments
+                    highlightedLine = highlightedLine.replace(/\/\*.*?\*\//g, '<span class="code-comment">$&</span>');
+                    
+                    // Strings (now with escaped quotes)
+                    highlightedLine = highlightedLine.replace(/&quot;([^&]*)&quot;/g, '<span class="code-string">&quot;$1&quot;</span>');
+                    
+                    // Keywords (access modifiers)
+                    highlightedLine = highlightedLine.replace(/\b(public|private|protected|static|final)\b/g, '<span class="code-keyword-blue">$1</span>');
+                    
+                    // Keywords (class/import)
+                    highlightedLine = highlightedLine.replace(/\b(class|interface|import|package|extends|implements)\b/g, '<span class="code-keyword-purple">$1</span>');
+                    
+                    // Data types
+                    highlightedLine = highlightedLine.replace(/\b(int|String|boolean|void|char|long|double|float|Integer|Boolean|Set|HashSet|List|ArrayList|Map|HashMap)\b/g, '<span class="code-type">$1</span>');
+                    
+                    // Control flow
+                    highlightedLine = highlightedLine.replace(/\b(if|else|for|while|return|new|this|try|catch|throw)\b/g, '<span class="code-control">$1</span>');
+                    
+                    // Boolean values
+                    highlightedLine = highlightedLine.replace(/\b(true|false|null)\b/g, '<span class="code-boolean">$1</span>');
+                    
+                    // Numbers
+                    highlightedLine = highlightedLine.replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>');
+                    
+                    // Method calls (simple pattern)
+                    highlightedLine = highlightedLine.replace(/(\w+)(\s*\()/g, '<span class="code-method">$1</span>$2');
+                    
+                    return highlightedLine;
+                });
+                
+                return highlightedLines.join('\n');
+            }
+            return escapeHTML(code);
+        }
+
+        function formatQuestionText(text) {
+            // Enhanced formatting for question text
+            return text
+                // Make headings bold
+                .replace(/^([A-Z][^:]+:)/gm, '<strong style="color: #1e40af; font-size: 1.1em;">$1</strong>')
+                // Highlight constraints and examples
+                .replace(/\b(Input:|Output:|Example:|Constraints:|Note:)/gi, '<strong style="color: #059669;">$1</strong>')
+                // Format code snippets in questions
+                .replace(/`([^`]+)`/g, '<code style="background: rgba(59, 130, 246, 0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace; color: #1e40af;">$1</code>');
+        }
+
+        function formatExplanationText(text) {
+            // Enhanced formatting for explanation text
+            return text
+                // Make section headings bold and colored
+                .replace(/^([A-Z][^:]+:)/gm, '<strong style="color: #d97706; font-size: 1.1em;">$1</strong>')
+                // Highlight time and space complexity
+                .replace(/(Time Complexity:|Space Complexity:)/gi, '<strong style="color: #dc2626;">$1</strong>')
+                // Format algorithm steps
+                .replace(/^\d+\./gm, '<strong style="color: #7c3aed;">$&</strong>')
+                // Format code references
+                .replace(/`([^`]+)`/g, '<code style="background: rgba(217, 119, 6, 0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace; color: #d97706;">$1</code>');
+        }
+
+        function toggleShortcutsHelp() {
+            const modal = document.getElementById('shortcuts-modal');
+            modal.classList.toggle('hidden');
         }
 
         function goBack() {
@@ -672,6 +1267,44 @@
                     renderTable();
                 });
         };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('detail-page').classList.contains('hidden')) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        navigateQuestion(-1);
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        navigateQuestion(1);
+                    }
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    goBack();
+                    break;
+                case 'b':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        toggleBookmark();
+                    }
+                    break;
+                case 'c':
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+                        e.preventDefault();
+                        if (!document.getElementById('pane-code').classList.contains('hidden')) {
+                            copyCode();
+                        }
+                    }
+                    break;
+            }
+        });
 
         // Initialize dark mode on load
         window.addEventListener('load', function() {
